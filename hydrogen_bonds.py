@@ -1,5 +1,3 @@
-import bioinf as bi
-
 class HBondGroup():
 
 	def __init__(self):
@@ -51,4 +49,21 @@ class HBondGroup():
 
 
 #class atom_IQ():
+
+#These objects comes from Stickle et al.
+donor_Nsp2_I_peptide = HBondGroup()
+donor_Nsp2_I_peptide.set_valance("sp2")
+donor_Nsp2_I_peptide.set_residue("peptide")
+donor_Nsp2_I_peptide.set_H_bondonor_radius(1.90)
+donor_Nsp2_I_peptide.set__atoms_str_list(["NE1"])
+donor_Nsp2_I_peptide.set_max_num_H_bonds(1)
+
+donor_Nsp2_I_Trp = HBondGroup()
+donor_Nsp2_I_Trp.set_valance("sp2")
+donor_Nsp2_I_Trp.set_residue("Trp")
+donor_Nsp2_I_Trp.set_H_bondonor_radius(1.90)
+donor_Nsp2_I_Trp.set__atoms_str_list(["NE1"])
+donor_Nsp2_I_Trp.set_max_num_H_bonds(1)
+
+
 
