@@ -67,8 +67,6 @@ class HBondGroup():
 		self.__NNN__ = NNN
 
 
-#class atom_IQ():
-
 #These objects comes from Stickle et al.
 donor_Nsp2_I_peptide = HBondGroup()
 donor_Nsp2_I_peptide.set_valance("sp2")
