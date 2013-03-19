@@ -35,7 +35,7 @@ class HBondGroup():
 		self.__valence__ = valence
 
 	def set_atoms_str_tupl(self, atoms_str_tupl):
-		assert type(atom_str_tupl) == tuple
+		assert type(atoms_str_tupl) == tuple
 		assert len(atoms_str_tupl) > 0
 		for atom_str in atoms_str_tupl:
 			assert type(atom_str) == str
@@ -43,7 +43,7 @@ class HBondGroup():
 
 	def set_residue(self, residue):
 		assert type(residue) == str
-		assert len(residue) == 3 
+		assert len(residue) == 3 or residue == 'peptide'
 		self.__residue__ = residue
 
 	def set_H_bond_radius(self, H_bond_radius):
@@ -72,8 +72,8 @@ class HBondGroup():
 donor_Nsp2_I_peptide = HBondGroup()
 donor_Nsp2_I_peptide.set_valance("sp2")
 donor_Nsp2_I_peptide.set_residue("peptide")
-donor_Nsp2_I_peptide.set_H_bondonor_radius(1.90)
-donor_Nsp2_I_peptide.set_atoms_str_tupl(["NE1"])
+donor_Nsp2_I_peptide.set_H_bond_radius(1.90)
+donor_Nsp2_I_peptide.set_atoms_str_tupl(("N",))
 donor_Nsp2_I_peptide.set_max_num_H_bonds(1)
 donor_Nsp2_I_peptide.set_NN("CA")
 donor_Nsp2_I_peptide.set_NNN("C")
@@ -81,9 +81,30 @@ donor_Nsp2_I_peptide.set_NNN("C")
 donor_Nsp2_I_Trp = HBondGroup()
 donor_Nsp2_I_Trp.set_valance("sp2")
 donor_Nsp2_I_Trp.set_residue("Trp")
-donor_Nsp2_I_Trp.set_H_bondonor_radius(1.90)
-donor_Nsp2_I_Trp.set_atoms_str_tupl(["NE1"])
+donor_Nsp2_I_Trp.set_H_bond_radius(1.90)
+donor_Nsp2_I_Trp.set_atoms_str_tupl(("NE1",))
 donor_Nsp2_I_Trp.set_max_num_H_bonds(1)
+donor_Nsp2_I_Trp.set_NN("CD1")
+donor_Nsp2_I_Trp.set_NNN("CE2")
+
+donor_Nsp2_II_Asn = HBondGroup()
+donor_Nsp2_II_Asn.set_valance("sp2")
+donor_Nsp2_II_Asn.set_residue("Asn")
+donor_Nsp2_II_Asn.set_H_bond_radius(1.90)
+donor_Nsp2_II_Asn.set_atoms_str_tupl(("ND2",))
+donor_Nsp2_II_Asn.set_max_num_H_bonds(1)
+donor_Nsp2_II_Asn.set_NN("CG")
+donor_Nsp2_II_Asn.set_NNN("CB")
+
+donor_Nsp2_II_Gln = HBondGroup()
+donor_Nsp2_II_Gln.set_valance("sp2")
+donor_Nsp2_II_Gln.set_residue("Gln")
+donor_Nsp2_II_Gln.set_H_bond_radius(1.90)
+donor_Nsp2_II_Gln.set_atoms_str_tupl(("NE2",))
+donor_Nsp2_II_Gln.set_max_num_H_bonds(1)
+donor_Nsp2_II_Gln.set_NN("CD")
+donor_Nsp2_II_Gln.set_NNN("CG")
+
 
 
 class AtomIQ():
@@ -142,6 +163,5 @@ class HBondIQ(BondIQ):
 	pass
 
 
-class 
 
 
