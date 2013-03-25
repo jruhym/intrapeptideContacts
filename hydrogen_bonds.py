@@ -280,14 +280,18 @@ acceptor_Ssp3_II_Cys.set_NNN("CA")
 
 class AtomIQ():
 
-	def __init__(self):
+	def __init__(self, pdbAtomLine):
+		assert type(pdbAtomLine) == str
+		atomPdbProperties = bioinf.PDBAtomLine.parse_string(pdbAtomLine)
 		# We may be able to set these at init automatically. 
-		self.__residue__ = 'Not Yet Set'
-		self.__name__ = 'Not Yet Set'
+		self.__residue__ = atomPdbProperties.resName
+		self.__name__ = atomPdbProperties.name
 		#self.__is_donor__ = -1
 		#self.__is_acceptor = -1
 		self.__valence__ = 'Not Yet Set'
-		self.__coordinates__ = [0.,0.,0.]
+		self.__coordinates__ = [float(atomPdbProperties.x),
+								float(atomPdbProperties.y),
+								float(atomPdbProperties.z)]
 
 	def get_residue(self):
 		return self.__residue__
