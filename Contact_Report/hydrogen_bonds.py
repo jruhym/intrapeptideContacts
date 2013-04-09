@@ -328,14 +328,17 @@ list_of_hbond_acceptor_groups = [
 
 
 
-class AtomIQ():
+class AtomIQ(object):
 
 	def __init__(self, pdbAtomLine):
-		assert type(pdbAtomLine) == str
+		assert isinstance(pdbAtomLine, basestring)
 		atomPdbProperties = bioinf.PDBAtomLine.parse_string(pdbAtomLine)
 		self._residue = atomPdbProperties.resName
 		self._name = atomPdbProperties.name
+		self._serial = atomPdbProperties.serial
 		self._valence = None
+		self._H_bond_donor_radius = None
+		self._H_bond_acceptor_radius = None
 		self._coordinates = [float(atomPdbProperties.x),
 			float(atomPdbProperties.y),
 			float(atomPdbProperties.z)
@@ -345,6 +348,7 @@ class AtomIQ():
 				self._residue in currentDonorGroup.residue:
 				self._is_donor = True
 				self._valence = currentDonorGroup.valence
+				self._H_bond_donor_radius = currentDonorGroup.H_bond_radius
 			else:
 				self._is_donor = False
 		for currentAcceptorGroup in list_of_hbond_acceptor_groups:
@@ -352,6 +356,8 @@ class AtomIQ():
 				self._residue in currentAcceptorGroup.residue:
 				self._is_acceptor = True
 				self._valence = currentAcceptorGroup.valence
+				self._H_bond_acceptor_radius = \
+					currentDonorGroup.H_bond_radius
 			else:
 				self._is_acceptor = False
 
@@ -360,6 +366,12 @@ class AtomIQ():
 	is_donor = property(lambda self: self._is_donor)
 	is_acceptor = property(lambda self: self._is_acceptor)
 	coordinates = property(lambda self: self._coordinates)
+	serial = property(lambda self: self._serial)
+	valence = property(lambda self: self._valence)
+	H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
+	H_bond_acceptor_radius = property(
+		lambda self: self._H_bond_acceptor_radius
+		)
 
 
 class DonorIQ(AtomIQ):
