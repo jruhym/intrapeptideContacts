@@ -9,15 +9,15 @@ for currentWildcard in sys.argv[1:]:
 	for file_path in glob.glob(currentWildcard):
 
 		reader = PDBATOMFileReader(file_path)
-		atomsList = []
-		donorList = []
-		acceptorList = []
+		atomDict = {}
+		donorDict = {}
+		acceptorDict = {}
 		for atom in reader:
-			atomsList.append(atom)
+			atomDict[atom.serial] = atom 
 			if atom.is_donor:
-				donorList.append(atom)
+				donorDict[atom.serial] = atom
 			if atom.is_acceptor:
-				acceptorList.append(atom)
+				acceptorDict[atom.serial] = atom
 		print len(atomsList)
 for donor in donorList:
 
