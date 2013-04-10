@@ -1,4 +1,6 @@
 import bioinf
+from numpy import array
+from numpy.linalg import norm
 
 class HBondGroup(object):
 
@@ -339,10 +341,10 @@ class AtomIQ(object):
 		self._valence = None
 		self._H_bond_donor_radius = None
 		self._H_bond_acceptor_radius = None
-		self._coordinates = [float(atomPdbProperties.x),
+		self._coordinates = array([float(atomPdbProperties.x),
 			float(atomPdbProperties.y),
 			float(atomPdbProperties.z)
-			]
+			])
 		for currentDonorGroup in list_of_hbond_donor_groups:
 			if self._name in currentDonorGroup.atoms_str_tupl and \
 				self._residue in currentDonorGroup.residue:
@@ -372,6 +374,13 @@ class AtomIQ(object):
 	H_bond_acceptor_radius = property(
 		lambda self: self._H_bond_acceptor_radius
 		)
+
+	def am_I_bonded_to_acceptor(self, acceptor):
+		distance = numpy.linalg.norm(self._coordinates - acceptor.coordinates)
+		
+		if distance < self._H_bond_donor_radius + acceptor.H_bond_acceptor_radius:
+			
+
 
 
 class DonorIQ(AtomIQ):
