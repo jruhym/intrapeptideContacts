@@ -2,6 +2,19 @@ import bioinf
 from numpy import array
 from numpy.linalg import norm
 
+class PDBATOMFileReader(object):#FileReader):
+    def __init__(self, file_or_path):
+        f = file_or_path if not isinstance(file_or_path, basestring) \
+        else  open(file_or_path, 'r')
+        self._contents = f.read()
+
+    def __iter__(self):
+        for line in self._contents.splitlines():
+            clean_line = line.strip()
+            if clean_line.startswith('ATOM'):
+                yield AtomIQ(clean_line)
+
+
 class HBondGroup(object):
 
 	valence = property(lambda self: self._valence)

@@ -2,7 +2,7 @@
 import sys
 import glob
 from hydrogen_bonds import *
-from bioinf import PDBATOMFileReader
+#from bioinf import PDBATOMFileReader
 
 for currentWildcard in sys.argv[1:]:
 
