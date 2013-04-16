@@ -1,6 +1,8 @@
 import bioinf
 from numpy import array
 from numpy.linalg import norm
+from .constants import list_of_hbond_donor_groups, \
+	list_of_hbond_acceptor_groups
 
 class PDBATOMFileReader(object):#FileReader):
     def __init__(self, file_or_path):
