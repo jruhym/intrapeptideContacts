@@ -327,7 +327,7 @@ acceptor_Ssp3_II_Cys = HBondGroup(
 	NNN = "CA"
 )
 
-list_of_hbond_donor_groups = [
+list_of_hbond_donor_groups = (
 	donor_Nsp2_I_Peptide,
 	donor_Nsp2_I_Trp,
 	donor_Nsp2_II_Asn,
@@ -339,9 +339,9 @@ list_of_hbond_donor_groups = [
 	donor_Osp3_I_Ser,
 	donor_Osp3_I_Thr,
 	donor_Osp2_I_Tyr
-]
+)
 
-list_of_hbond_acceptor_groups = [
+list_of_hbond_acceptor_groups = ()
 	acceptor_Nsp2_I_His_ND1,
 	acceptor_Nsp2_I_His_NE2,
 	acceptor_Osp3_I_Ser,
@@ -354,7 +354,7 @@ list_of_hbond_acceptor_groups = [
 	acceptor_Osp2_III_Tyr,
 	acceptor_Ssp3_I_Met,
 	acceptor_Ssp3_II_Cys
-]
+)
 
 
 
@@ -405,10 +405,10 @@ class AtomIQ(object):
 		lambda self: self._H_bond_acceptor_radius
 		)
 
-	def am_I_bonded_to_acceptor(self, acceptor):
-		distance = numpy.linalg.norm(self._coordinates - acceptor.coordinates)
+	#def am_I_bonded_to_acceptor(self, acceptor):
+	#	distance = numpy.linalg.norm(self._coordinates - acceptor.coordinates)
 		
-		if distance < self._H_bond_donor_radius + acceptor.H_bond_acceptor_radius:
+	#	if distance < self._H_bond_donor_radius + acceptor.H_bond_acceptor_radius:
 			
 
 
