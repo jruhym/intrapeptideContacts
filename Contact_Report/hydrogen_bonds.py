@@ -18,16 +18,15 @@ class PDBATOMFileReader(object):#FileReader):
         			self._residues[atom.uid].add_atom(atom)
         		except KeyError:
         			self._residues[atom.uid] = ResidueIQ(atom)
-
+        for atom in self._atoms.itervalues():
+        	atom.set_Residue(self._residues[atom.uid])
 
 
 
 
     def __iter__(self):
-        for line in self._contents.splitlines():
-            clean_line = line.strip()
-            if clean_line.startswith('ATOM'):
-                yield AtomIQ(clean_line)
+        for atom in self._atoms:
+                yield atom
 
 
 class HBondGroup(object):
@@ -95,267 +94,6 @@ class HBondGroup(object):
 	def assert_NNN(NNN):
 		assert type(NNN) == str
 
-# These objects come from Table 1 from Stickle et al. 
-# DOI: 10.1016/0022-2836(92)91058-W
-donor_Nsp2_I_Peptide = HBondGroup(
-	valence = 'sp2',
-	residue = 'Peptide',
-	H_bond_radius = 1.90,
-	atoms_str_tupl = ('N',),
-	max_num_H_bonds = 1,
-	NN = 'CA',
-	NNN = 'C'
-)
-
-donor_Nsp2_I_Trp = HBondGroup(
-	valence = 'sp2',
-	residue = 'Trp',
-	H_bond_radius = 1.90,
-	atoms_str_tupl = ('NE1',),
-	max_num_H_bonds = 1,
-	NN = 'CD1',
-	NNN = 'CE2'
-)
-
-donor_Nsp2_II_Asn = HBondGroup(
-	valence = 'sp2',
-	residue = 'Asn',
-	H_bond_radius = 1.90,
-	atoms_str_tupl = ("ND2",),
-	max_num_H_bonds = 2,
-	NN = 'CG',
-	NNN = 'CB'
-)
-
-donor_Nsp2_II_Gln = HBondGroup(
-	valence = "sp2",
-	residue = "Gln",
-	H_bond_radius = 1.90,
-	atoms_str_tupl = ("NE2",),
-	max_num_H_bonds = 2,
-	NN = "CD",
-	NNN = "CG"
-)
-
-donor_Nsp2_III_Arg = HBondGroup(
-	valence = "sp2",
-	residue = "Arg",
-	H_bond_radius = 1.90,
-	atoms_str_tupl = ("NH1", "NH2"),
-	max_num_H_bonds = 2,	
-	NN = "CZ",
-	NNN = "NE"
-)
-
-donor_Nsp2_IV_Arg = HBondGroup(
-	valence = "sp2",
-	residue = "Arg",
-	H_bond_radius = 1.90,
-	atoms_str_tupl = ("NE",),
-	max_num_H_bonds = 1,
-	NN = "CZ",
-	NNN = "CD"
-)
-
-donor_Nsp2_V_His = HBondGroup(
-	valence = "sp2",
-	residue = "His",
-	H_bond_radius = 1.90,
-	atoms_str_tupl = ("NE2",),
-	max_num_H_bonds = 1,
-	NN = "CE1",
-	NNN = "CD2"
-)
-
-donor_Nsp3_I_Lys = HBondGroup(
-	valence = "sp3",
-	residue = "Lys",
-	H_bond_radius = 2.10,
-	atoms_str_tupl = ("NZ",),
-	max_num_H_bonds = 3,
-	NN = "CE",
-	NNN = "CD"
-)
-
-donor_Osp3_I_Ser = HBondGroup(
-	valence = "sp3",
-	residue = "Ser",
-	H_bond_radius = 1.70,
-	atoms_str_tupl = ("OG",),
-	max_num_H_bonds = 1,
-	NN = "CB",
-	NNN = "CA"
-)
-
-donor_Osp3_I_Thr = HBondGroup(
-	valence = "sp3",
-	residue = "Thr",
-	H_bond_radius = 1.70,
-	atoms_str_tupl = ("OG1",),
-	max_num_H_bonds = 1,
-	NN = "CB",
-	NNN = "CA"
-)
-
-donor_Osp2_I_Tyr = HBondGroup(
-	valence = "sp2",
-	residue = "Tyr",
-	H_bond_radius = 1.70,
-	atoms_str_tupl = ("OH",),
-	max_num_H_bonds = 1,
-	NN = "CZ",
-	NNN = "CE1"
-)
-
-acceptor_Nsp2_I_His_ND1 = HBondGroup(
-	valence = "sp2",
-	residue = "His",
-	H_bond_radius = 1.60,
-	atoms_str_tupl = ("ND1",),
-	max_num_H_bonds = 1,
-	NN = "CE1",
-	NNN = "CG"
-)
-
-acceptor_Nsp2_I_His_NE2 = HBondGroup(
-	valence = "sp2",
-	residue = "His",
-	H_bond_radius = 1.60,
-	atoms_str_tupl = ("NE2",),
-	max_num_H_bonds = 1,
-	NN = "CE1",
-	NNN = "CD2"
-)
-
-acceptor_Osp3_I_Ser = HBondGroup(
-	valence = "sp3",
-	residue = "Ser",
-	H_bond_radius = 1.70,
-	atoms_str_tupl = ("OG",),
-	max_num_H_bonds = 2,
-	NN = "CB",
-	NNN = "CA"
-)
-
-acceptor_Osp3_I_Thr = HBondGroup(
-	valence = "sp3",
-	residue = "Thr",
-	H_bond_radius = 1.70,
-	atoms_str_tupl = ("OG1",),
-	max_num_H_bonds = 2,
-	NN = "CB",
-	NNN = "CA"
-)
-
-acceptor_Osp2_I_Peptide = HBondGroup(
-	valence = "sp2",
-	residue = "Peptide",
-	H_bond_radius = 1.60,
-	atoms_str_tupl = ("O",),
-	max_num_H_bonds = 2,
-	NN = "C",
-	NNN = "CA"
-)
-
-acceptor_Osp2_I_Asn = HBondGroup(
-	valence = "sp2",
-	residue = "Asn",
-	H_bond_radius = 1.60,
-	atoms_str_tupl = ("OD1",),
-	max_num_H_bonds = 2,
-	NN = "CG",
-	NNN = "CB"
-)
-
-acceptor_Osp2_I_Gln = HBondGroup(
-	valence = "sp2",
-	residue = "Gln",
-	H_bond_radius = 1.60,
-	atoms_str_tupl = ("OD1",),
-	max_num_H_bonds = 2,
-	NN = "CD",
-	NNN = "CG"
-)
-
-acceptor_Osp2_II_Asp = HBondGroup(
-	valence = "sp2",
-	residue = "Asp",
-	H_bond_radius = 1.60,
-	atoms_str_tupl = ("OD1", "OD2"),
-	max_num_H_bonds = 2,
-	NN = "CG",
-	NNN = "CB"
-)
-
-acceptor_Osp2_II_Glu = HBondGroup(
-	valence = "sp2",
-	residue = "Glu",
-	H_bond_radius = 1.60,
-	atoms_str_tupl = ("OE1", "OE2"),
-	max_num_H_bonds = 2,
-	NN = "CD",
-	NNN = "CG"
-)
-
-acceptor_Osp2_III_Tyr = HBondGroup(
-	valence = "sp2",
-	residue = "Tyr",
-	H_bond_radius = 1.70,
-	atoms_str_tupl = ("OH",),
-	max_num_H_bonds = 1,
-	NN = "CZ",
-	NNN = "CE1"
-)
-
-acceptor_Ssp3_I_Met = HBondGroup(
-	valence = "sp3",
-	residue = "Met",
-	H_bond_radius = 1.95,
-	atoms_str_tupl = ("SD",),
-	max_num_H_bonds = 2,
-	NN = "CE",
-	NNN = "CG"
-)
-
-acceptor_Ssp3_II_Cys = HBondGroup(
-	valence = "sp3",
-	residue = "Cys",
-	H_bond_radius = 2.10,
-	atoms_str_tupl = ("SG",),
-	max_num_H_bonds = 2,
-	NN = "CB",
-	NNN = "CA"
-)
-
-list_of_hbond_donor_groups = (
-	donor_Nsp2_I_Peptide,
-	donor_Nsp2_I_Trp,
-	donor_Nsp2_II_Asn,
-	donor_Nsp2_II_Gln,
-	donor_Nsp2_III_Arg,
-	donor_Nsp2_IV_Arg,
-	donor_Nsp2_V_His,
-	donor_Nsp3_I_Lys,
-	donor_Osp3_I_Ser,
-	donor_Osp3_I_Thr,
-	donor_Osp2_I_Tyr
-)
-
-list_of_hbond_acceptor_groups = (
-	acceptor_Nsp2_I_His_ND1,
-	acceptor_Nsp2_I_His_NE2,
-	acceptor_Osp3_I_Ser,
-	acceptor_Osp3_I_Thr,
-	acceptor_Osp2_I_Peptide,
-	acceptor_Osp2_I_Asn,
-	acceptor_Osp2_I_Gln,
-	acceptor_Osp2_II_Asp,
-	acceptor_Osp2_II_Glu,
-	acceptor_Osp2_III_Tyr,
-	acceptor_Ssp3_I_Met,
-	acceptor_Ssp3_II_Cys
-)
-
 
 
 class AtomIQ(object):
@@ -363,13 +101,14 @@ class AtomIQ(object):
 	def __init__(self, pdbAtomLine):
 		assert isinstance(pdbAtomLine, basestring)
 		atomPdbProperties = bioinf.PDBAtomLine.parse_string(pdbAtomLine)
-		self._residue = atomPdbProperties.resName
+		self._res_name = atomPdbProperties.resName
 		self._resSeq = atomPdbProperties.resSeq
 		self._name = atomPdbProperties.name
 		self._serial = atomPdbProperties.serial
 		self._valence = None
 		self._H_bond_donor_radius = None
 		self._H_bond_acceptor_radius = None
+		self._residue = None
 		self._coordinates = array([float(atomPdbProperties.x),
 			float(atomPdbProperties.y),
 			float(atomPdbProperties.z)
@@ -392,7 +131,12 @@ class AtomIQ(object):
 			else:
 				self._is_acceptor = False
 
-	residue = property(lambda self: self._residue)
+	def set_Residue(self, residue):
+		assert isinstance(residue, ResidueIQ)
+		assert residue.uid == self._reqSeq
+		self._residue = residue
+
+	res_name = property(lambda self: self._res_name)
 	uid = property(lambda self: self._resSeq)
 	name = property(lambda self: self._name)
 	is_donor = property(lambda self: self._is_donor)
@@ -404,12 +148,7 @@ class AtomIQ(object):
 	H_bond_acceptor_radius = property(
 		lambda self: self._H_bond_acceptor_radius
 		)
-
-	#def am_I_bonded_to_acceptor(self, acceptor):
-	#	distance = numpy.linalg.norm(self._coordinates - acceptor.coordinates)
-		
-	#	if distance < self._H_bond_donor_radius + acceptor.H_bond_acceptor_radius:
-			
+	residue = property(lambda self: self_.residue)
 
 
 class ResidueIQ(object):
@@ -429,11 +168,34 @@ class ResidueIQ(object):
 	uid = property(lambda self: self._resSeq)
 	abbr = property(lambda self: self._abbr)
 
-class DonorIQ(AtomIQ):
+
+
+class Sp3DonorIQ(AtomIQ):
+
+	def __init__(self):
+		pass
+
+	def am_I_bonded_to_acceptor(self, acceptor):
+		distance = numpy.linalg.norm(self._coordinates - acceptor.coordinates)
+		
+		if distance < self._H_bond_donor_radius + acceptor.H_bond_acceptor_radius:
+
+			A = acceptor.coordinates
+			D = self._coordinates
+			DD = 
+			if angleA_D_DD > 90. and angleA_D_DD 180.:
+				if 
+
+
+class Sp2DonorIQ(AtomIQ):
+	def __init__(self):
+		pass
+
+
+class Sp2AcceptorIQ(AtomIQ):
 	pass
 
-
-class AcceptorIQ(AtomIQ):
+class Sp3AcceptorIQ(AtomIQ):
 	pass
 
 

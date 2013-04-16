@@ -9,18 +9,25 @@ for currentWildcard in sys.argv[1:]:
 	for file_path in glob.glob(currentWildcard):
 
 		reader = PDBATOMFileReader(file_path)
-		atomDict = {}
+		#atomDict = {} # dict or ordered dict
 		donorDict = {}
 		acceptorDict = {}
 		for atom in reader:
-			atomDict[atom.serial] = atom 
+			#atomDict[atom.serial] = atom 
 			if atom.is_donor:
-				donorDict[atom.serial] = atom
+				if atom.valence == 'sp2':
+					donorDict[atom.serial] = Sp2DonorIQ(atom)
+				else:
+					donorDict[atom.serial] = Sp3DonorIQ(atom)
 			if atom.is_acceptor:
-				acceptorDict[atom.serial] = atom
+				if atom.valence = 'sp2':
+					acceptorDict[atom.serial] = Sp2AcceptorIQ(atom)
+				else:
+					acceptorDict[atom.serial] = Sp2AcceptorIQ(atom)
 		print len(atomsList)
 for donor in donorList:
 
 	for acceptor in acceptorList:
+		print 'bbq for you'
 
 		
