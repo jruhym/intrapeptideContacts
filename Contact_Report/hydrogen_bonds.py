@@ -7,6 +7,21 @@ class PDBATOMFileReader(object):#FileReader):
         f = file_or_path if not isinstance(file_or_path, basestring) \
         else  open(file_or_path, 'r')
         self._contents = f.read()
+        self._atoms = {}
+        self._residues = {}
+        for line in f:
+        	clean_line = line.strip()
+        	if clean_line.startswith('ATOM'):
+        		atom = AtomIQ(clean_line)
+        		self._atoms[atom.serial] = atom
+        		try: 
+        			self._residues[atom.uid].add_atom(atom)
+        		except KeyError:
+        			self._residues[atom.uid] = ResidueIQ(atom)
+
+
+
+
 
     def __iter__(self):
         for line in self._contents.splitlines():
@@ -349,6 +364,7 @@ class AtomIQ(object):
 		assert isinstance(pdbAtomLine, basestring)
 		atomPdbProperties = bioinf.PDBAtomLine.parse_string(pdbAtomLine)
 		self._residue = atomPdbProperties.resName
+		self._resSeq = atomPdbProperties.resSeq
 		self._name = atomPdbProperties.name
 		self._serial = atomPdbProperties.serial
 		self._valence = None
@@ -377,6 +393,7 @@ class AtomIQ(object):
 				self._is_acceptor = False
 
 	residue = property(lambda self: self._residue)
+	uid = property(lambda self: self._resSeq)
 	name = property(lambda self: self._name)
 	is_donor = property(lambda self: self._is_donor)
 	is_acceptor = property(lambda self: self._is_acceptor)
@@ -395,6 +412,22 @@ class AtomIQ(object):
 			
 
 
+class ResidueIQ(object):
+	def __init__(self, atom):
+		assert isinstance(atom, AtomIQ)
+		self._atoms = {}
+		self._atoms[atom.resSeq] = atom
+		self._resSeq = atom.resSeq
+		self._abbr = atom.residue
+
+	def add_atom(self, atom):
+		assert isinstance(atom, AtomIQ)
+		if atom.name not in self._atoms:
+			atoms[atom.name] = atom
+
+	atoms = property(lambda self: self._atoms)
+	uid = property(lambda self: self._resSeq)
+	abbr = property(lambda self: self._abbr)
 
 class DonorIQ(AtomIQ):
 	pass
