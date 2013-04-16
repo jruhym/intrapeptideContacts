@@ -148,7 +148,7 @@ class AtomIQ(object):
 	H_bond_acceptor_radius = property(
 		lambda self: self._H_bond_acceptor_radius
 		)
-	residue = property(lambda self: self_.residue)
+	residue = property(lambda self: self_.residue, set_Residue)
 
 
 class ResidueIQ(object):
