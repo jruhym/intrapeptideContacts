@@ -341,7 +341,7 @@ list_of_hbond_donor_groups = (
 	donor_Osp2_I_Tyr
 )
 
-list_of_hbond_acceptor_groups = ()
+list_of_hbond_acceptor_groups = (
 	acceptor_Nsp2_I_His_ND1,
 	acceptor_Nsp2_I_His_NE2,
 	acceptor_Osp3_I_Ser,
