@@ -5,7 +5,7 @@ from .constants import *
 #from numpy.testing import assert_array_equal
 from StringIO import StringIO
 
-print 'hello'
+
 class TestAtomIq(unittest.TestCase):
 
 	def setUp(self):
@@ -72,7 +72,6 @@ class TestPdbAtomFileReader(unittest.TestCase):
 		self._i = 0
 		for atom in reader:
 			self._i += 1
-			print atom.name
 			if atom.name == 'CA':
 				self._CAs.append(atom)
 
@@ -83,7 +82,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
 		len(self._CAs).should.equal(5)
 
 	def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
-		len(self._CAs[0].atoms).should.equal(4)
+		len(self._CAs[0].residue.atoms).should.equal(4)
 
 
 
