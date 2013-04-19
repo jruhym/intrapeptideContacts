@@ -1,8 +1,7 @@
 import bioinf
 from numpy import array, dot, arccos, rad2deg
 from numpy.linalg import norm
-from .constants import list_of_hbond_donor_groups, \
-	list_of_hbond_acceptor_groups
+from .constants import *
 
 
 
@@ -28,118 +27,25 @@ class PDBATOMFileReader(object):#FileReader):
 
     def __iter__(self):
         for atom in self._atoms:
-                yield atom
-
-
-
-class HBondGroup(object):
-
-	valence = property(lambda self: self._valence)
-	atoms_str_tupl = property(lambda self: self._atoms_str_tupl)
-	residue = property(lambda self: self._residue)
-	H_bond_radius = property(lambda self: self._H_bond_radius)
-	max_num_H_bonds = property(lambda self: self_.max_num_H_bonds)
-	NN = property(lambda self: self_.NN)
-	NNN = property(lambda self: self_.NNN)
-
-	def __init__(self, valence=None, atoms_str_tupl=None, residue=None, 
-			H_bond_radius=None, max_num_H_bonds=None, NN=None, NNN=None):
-	
-		HBondGroup.assert_valence(valence)
-		HBondGroup.assert_atoms_str_tupl(atoms_str_tupl)
-		HBondGroup.assert_residue(residue)
-		HBondGroup.assert_H_bond_radius(H_bond_radius)
-		HBondGroup.assert_max_num_H_bonds(max_num_H_bonds)
-		HBondGroup.assert_NN(NN)
-		HBondGroup.assert_NNN(NNN)
-
-		self._valence = valence
-		self._atoms_str_tupl = atoms_str_tupl
-		self._residue = residue
-		self._H_bond_radius = H_bond_radius
-		self._max_num_H_bonds = max_num_H_bonds
-		self._NN = NN
-		self._NNN = NNN
-
-	@staticmethod
-	def assert_valence(valence):
-		assert isinstance(valence, basestring)
-
-	@staticmethod
-	def assert_atoms_str_tupl(atoms_str_tupl):
-		assert type(atoms_str_tupl) == tuple
-		assert len(atoms_str_tupl) > 0
-		for atom_str in atoms_str_tupl:
-			assert type(atom_str) == str
-
-	@staticmethod
-	def assert_residue(residue):
-		assert type(residue) == str
-		assert len(residue) == 3 or residue == 'Peptide'
-
-	@staticmethod
-	def assert_H_bond_radius(H_bond_radius):
-		assert type(H_bond_radius) == float or type(H_bond_radius) == int
-		assert H_bond_radius > 0
-		assert H_bond_radius <= 2.1
-
-	@staticmethod
-	def assert_max_num_H_bonds(max_num_H_bonds):
-		assert type(max_num_H_bonds) == int
-		assert max_num_H_bonds > 0
-		assert max_num_H_bonds < 4
-
-	@staticmethod
-	def assert_NN(NN):
-		assert type(NN) == str
-
-	@staticmethod
-	def assert_NNN(NNN):
-		assert type(NNN) == str
+            yield atom
 
 
 
 class AtomIQ(object):
 
-	@staticmethod
-	def from_pdb_line(pdb_line):
-		assert isinstance(pdb_line, basestring)
-		pdb_atom_line = bioinf.PDBAtomLine.parse_string(pdb_line)
-
-		for currentDonorGroup in list_of_hbond_donor_groups:
-			if self._name in currentDonorGroup.atoms_str_tupl and \
-				residue in currentDonorGroup.residue:
-				is_donor = True
-				valence = currentDonorGroup.valence
-				H_bond_donor_radius = currentDonorGroup.H_bond_radius
-			else:
-				is_donor = False
-		for currentAcceptorGroup in list_of_hbond_acceptor_groups:
-			if pdb_atom_line.name in currentAcceptorGroup.atoms_str_tupl and \
-				residue in currentAcceptorGroup.residue:
-				is_acceptor = True
-				valence = currentAcceptorGroup.valence
-				H_bond_acceptor_radius = \
-					currentDonorGroup.H_bond_radius
-			else:
-				self._is_acceptor = False
-
-		if ... :
-			return Sp3AcceptorIQ(pdb_atom_line, ...)
-		elif is_donor:
-			return Someothersubclass(pdb_atom_line, ...)
-		else:
-			return AtomIQ(pdb_atom_line)
-
-	def __init__(self, pdb_atom_line):
-		assert isinstance(pdb_atom_line, PDBAtomLine)
+		
+	def __init__(self, pdb_line):
+		assert isinstance(pdb_line, basestring)	
+		pdb_atom_line = bioinf.PDBAtomLine.parse_string(pdb_line)	
 		self._res_name = pdb_atom_line.resName
 		self._resSeq = pdb_atom_line.resSeq
 		self._name = pdb_atom_line.name
 		self._serial = pdb_atom_line.serial
-		self._valence = None
-		self._H_bond_donor_radius = None
-		self._H_bond_acceptor_radius = None
+		self._is_donor = False
+		self._is_acceptor = False
+		#self._valence = None
+		#self._H_bond_donor_radius = None
+		#self._H_bond_acceptor_radius = None
 		self._residue = None
 		self._coordinates = array([float(pdb_atom_line.x),
 			float(pdb_atom_line.y),
@@ -147,26 +53,22 @@ class AtomIQ(object):
 			])
 		for currentDonorGroup in list_of_hbond_donor_groups:
 			if self._name in currentDonorGroup.atoms_str_tupl and \
-				self._residue in currentDonorGroup.residue:
+				self._res_name == currentDonorGroup.residue.upper():
 				self._is_donor = True
 				self._valence = currentDonorGroup.valence
 				self._H_bond_donor_radius = currentDonorGroup.H_bond_radius
-			else:
-				self._is_donor = False
 		for currentAcceptorGroup in list_of_hbond_acceptor_groups:
-			if self._name in currentAcceptorGroup.atoms_str_tupl and \
-				self._residue in currentAcceptorGroup.residue:
+			if pdb_atom_line.name in currentAcceptorGroup.atoms_str_tupl and \
+				self._res_name == currentAcceptorGroup.residue.upper():
 				self._is_acceptor = True
 				self._valence = currentAcceptorGroup.valence
-				self._H_bond_acceptor_radius = \
-					currentDonorGroup.H_bond_radius
-			else:
-				self._is_acceptor = False
-
+				self._H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
+	
 	def set_Residue(self, residue):
 		assert isinstance(residue, ResidueIQ)
 		assert residue.uid == self._reqSeq
-		self._residue = residue
+		self._residue = residue		
+
 
 	res_name = property(lambda self: self._res_name)
 	uid = property(lambda self: self._resSeq)
@@ -175,16 +77,98 @@ class AtomIQ(object):
 	is_acceptor = property(lambda self: self._is_acceptor)
 	coordinates = property(lambda self: self._coordinates)
 	serial = property(lambda self: self._serial)
-	valence = property(lambda self: self._valence)
-	H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
-	H_bond_acceptor_radius = property(
-		lambda self: self._H_bond_acceptor_radius
-		)
-	residue = property(lambda self: self_.residue, set_Residue)
+	#valence = property(lambda self: self._valence)
+	#H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
+	#H_bond_acceptor_radius = property(
+		#lambda self: self._H_bond_acceptor_radius
+		#)
+	residue = property(lambda self: self._residue, set_Residue)
 
+
+class Hbond_participant(object):
+
+	def __init__(self, atom):
+		pass
+
+	@staticmethod
+	def generate_participant_valence(self, atom):
+		assert isinstance(atom, AtomIQ)
+		if atom.valence == 'sp2':
+			return Sp2_Hbond_participant(atom)
+		elif atom.valence == 'sp3':
+			return Sp3_Hbond_participant(atom)
+
+
+class Sp3_Hbond_participant(Hbond_participant):
+	def _distance_is_ok_to(self, M, P, partner):
+
+		distance = norm(M - P)
+		if distance < self._H_bond_radius + parner.H_bond_radius:
+			return distance
+		else:
+			return False
+
+
+	def _angle_is(self, ba, bc):
+
+		return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
+
+	def _angle_is_ok(self, MtP, MtMM):
+		angle = _angle_is(MtP, MtMM)
+		if angle < 180. and angle > self._angle_min:
+			return True
+		else:
+			return False
+
+	def _planarity_is_ok(self, P, M, MM, MMM):
+		return True
+
+	def am_I_bonded_to_partner(self, parner):
+			
+		M = self._coordinates
+		P = parner.coordinates
+
+		if _distance_is_ok(M,P, partner):
+
+			MM = self._residue[self._NN].coordinates
+
+			MtMM = MM - M
+			MtP = P - M
+			if _angle_is_ok(MtP, MtMM):
+
+				MMM = self._residue[self._NNN]
+				MMtMMM = MMM - MM
+
+				if _planarity_is_ok(P, M, MM, MMM):
+
+					return True
+		
+	H_bond_radius = property(lambda self: self._H_bond_radius)
+
+
+
+
+class Sp2_Hbond_participant(Sp3_Hbond_participant):
+		
+	def _planarity_is_ok(self, MtP, MtMM, MMtMMM):
+		MMtM = -MtMM
+		my_plane_norm = cross(MMtMMM, MMtM)
+		perndclr_MMtM_in_plane = cross(MMtM, my_plane_norm)
+		if dot(MtA, perndclr_MMtM_in_plane) > 0.:
+			torsion_angle_center = 0.
+		else: 
+			torsion_angle_center = 180.
+		plane_norm_w_partner = cross(MMtM, MtP)
+		torsion_angle = _angle_is(my_plane_norm, plane_norm_w_partner)
+		if torsion_angle < torsion_angle_center + self._torsion_range and\
+			torsion_angle > torsion_angle_center - self._torsion_range:
+			return True
+		else:
+			return False
 
 
 class ResidueIQ(object):
+
 	def __init__(self, atom):
 		assert isinstance(atom, AtomIQ)
 		self._atoms = {
@@ -203,120 +187,5 @@ class ResidueIQ(object):
 	atoms = property(lambda self: self._atoms, add_atom)
 	uid = property(lambda self: self._resSeq)
 	abbr = property(lambda self: self._abbr)
-
-
-
-class Sp3AcceptorIQ(AtomIQ):
-	def __init__(self, pdb_atom_line):
-		super(AtomIQ, self).__init__(pdb_atom_line)
-		self._angle_min = 60.
-		self._H_bond_radius = self._H_bond_acceptor_radius
-
-	def _distance_is_ok(self, M, P, partner):
-		return True
-
-	def _angle_is(self, ba, bc):
-
-		return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
-
-	def _angle_is_ok(self, MtP, MtMM):
-		angle = _angle_is(MtP, MtMM)
-		if angle < 180. and angle > self._angle_min:
-			return True
-		else:
-			return False
-
-	def _planarity_is_ok(self, P, M, MM, MMM):
-		return True
-
-	def am_I_bonded_to_partner(self, parner):
-		
-		M = self._coordinates
-		P = parner.coordinates
-
-		if _distance_is_ok(M,P, partner):
-
-			MM = self._residue[self._NN].coordinates
-
-			MtMM = MM - M
-			MtP = P - M
-			if _angle_is_ok(MtP, MtMM):
-
-				MMM = self._residue[self._NNN]
-				MMtMMM = MMM - MM
-
-				if _planarity_is_ok(P, M, MM, MMM):
-
-					return True
-	
-	H_bond_radius = property(lambda self: self._H_bond_radius)		
-
-
-class Sp3DonorIQ(Sp3AcceptorIQ):
-
-	def __init__(self):
-		super(Sp3AcceptorIQ, self).__init__(pdb_atom_line)
-		self._angle_min = 90.
-
-	def distance_is_ok_to(self, M, P, partner):
-
-		distance = norm(M - P)
-		if distance < self._H_bond_radius + parner.H_bond_radius:
-			return distance
-		else:
-			return False
-
-	
-
-
-class Sp2DonorIQ(Sp3DonorIQ):
-
-	def __init__(self):
-		super(Sp3DonorIQ, self).__init__(pdb_atom_line)
-		self._torsion_range = 60.
-
-	def _planarity_is_ok(self, MtP, MtMM, MMtMMM):
-		MMtM = -MtMM
-		my_plane_norm = cross(MMtMMM, MMtM)
-		perndclr_MMtM_in_plane = cross(MMtM, my_plane_norm)
-		if dot(MtA, perndclr_MMtM_in_plane) > 0.:
-			torsion_angle_center = 0.
-		else: 
-			torsion_angle_center = 180.
-		plane_norm_w_partner = cross(MMtM, MtP)
-		torsion_angle = _angle_is(my_plane_norm, plane_norm_w_partner)
-		if torsion_angle < torsion_angle_center + self._torsion_range and \
-			torsion_angle > torsion_angle_center - self._torsion_range:
-			return True
-		else:
-			return False
-
-
-
-class Sp2AcceptorIQ(Sp2DonorIQ):
-
-	def __init__(self):
-		super(Sp2DonorIQ, self).__init__(pdb_atom_line)
-		self._torsion_range = 90.
-
-	def _distance_is_ok(self, M, P, partner):
-		return True
-
-
-	
-
-
-class BondIQ(object):
-	pass
-
-
-
-class HBondIQ(BondIQ):
-	pass
-
-	#__init__(self, donor, acceptor):
-#		__self__.donorValence = donor.getValence()
-#		__self__.acceptorValence = acceptor.getValence()
-
 
 

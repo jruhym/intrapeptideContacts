@@ -1,3 +1,68 @@
+class HBondGroup(object):
+
+	valence = property(lambda self: self._valence)
+	atoms_str_tupl = property(lambda self: self._atoms_str_tupl)
+	residue = property(lambda self: self._residue)
+	H_bond_radius = property(lambda self: self._H_bond_radius)
+	max_num_H_bonds = property(lambda self: self_.max_num_H_bonds)
+	NN = property(lambda self: self_.NN)
+	NNN = property(lambda self: self_.NNN)
+
+	def __init__(self, valence=None, atoms_str_tupl=None, residue=None, 
+			H_bond_radius=None, max_num_H_bonds=None, NN=None, NNN=None):
+	
+		HBondGroup.assert_valence(valence)
+		HBondGroup.assert_atoms_str_tupl(atoms_str_tupl)
+		HBondGroup.assert_residue(residue)
+		HBondGroup.assert_H_bond_radius(H_bond_radius)
+		HBondGroup.assert_max_num_H_bonds(max_num_H_bonds)
+		HBondGroup.assert_NN(NN)
+		HBondGroup.assert_NNN(NNN)
+
+		self._valence = valence
+		self._atoms_str_tupl = atoms_str_tupl
+		self._residue = residue
+		self._H_bond_radius = H_bond_radius
+		self._max_num_H_bonds = max_num_H_bonds
+		self._NN = NN
+		self._NNN = NNN
+
+	@staticmethod
+	def assert_valence(valence):
+		assert isinstance(valence, basestring)
+
+	@staticmethod
+	def assert_atoms_str_tupl(atoms_str_tupl):
+		assert type(atoms_str_tupl) == tuple
+		assert len(atoms_str_tupl) > 0
+		for atom_str in atoms_str_tupl:
+			assert type(atom_str) == str
+
+	@staticmethod
+	def assert_residue(residue):
+		assert type(residue) == str
+		assert len(residue) == 3 or residue == 'Peptide'
+
+	@staticmethod
+	def assert_H_bond_radius(H_bond_radius):
+		assert type(H_bond_radius) == float or type(H_bond_radius) == int
+		assert H_bond_radius > 0
+		assert H_bond_radius <= 2.1
+
+	@staticmethod
+	def assert_max_num_H_bonds(max_num_H_bonds):
+		assert type(max_num_H_bonds) == int
+		assert max_num_H_bonds > 0
+		assert max_num_H_bonds < 4
+
+	@staticmethod
+	def assert_NN(NN):
+		assert type(NN) == str
+
+	@staticmethod
+	def assert_NNN(NNN):
+		assert type(NNN) == str
+
 # These objects come from Table 1 from Stickle et al. 
 # DOI: 10.1016/0022-2836(92)91058-W
 donor_Nsp2_I_Peptide = HBondGroup(
