@@ -115,7 +115,7 @@ class HBondParticipant(object):
 
 
 class Sp3HBondParticipant(HBondParticipant):
-    def _distance_is_ok_to(self, M, P, partner):
+    def _distance_is_ok(self, M, P, partner):
 
         distance = norm(M - P)
         if distance < self._H_bond_radius + parner.H_bond_radius:
@@ -137,26 +137,21 @@ class Sp3HBondParticipant(HBondParticipant):
     def _planarity_is_ok(self, P, M, MM, MMM):
         return True
 
-    def am_I_bonded_to_partner(self, parner, as_donor=True):
-            
-        M = self._atom._coordinates
+    def can_I_bond_to_partner(self, parner, as_donor=True):
+        M = self._atom.coordinates
         P = parner.coordinates
-
-        if _distance_is_ok(M,P, partner):
-
-            MM = self._residue[self._NN].coordinates
-
+        distance_or_is_ok = _distance_is_ok(M, P, partner)
+        if distance_or_is_ok:
+            MM = self._atom.residue.atoms[self._atom.NN].coordinates
             MtMM = MM - M
             MtP = P - M
             if _angle_is_ok(MtP, MtMM):
-
-                MMM = self._residue[self._NNN]
+                MMM = self._atom.residue.atoms[self._atom.NNN]
                 MMtMMM = MMM - MM
-
                 if _planarity_is_ok(P, M, MM, MMM):
-
                     return True
-        
+    
+    def    
     H_bond_radius = property(lambda self: self._H_bond_radius)
 
 
