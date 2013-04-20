@@ -2,7 +2,6 @@
 import sys
 import glob
 from .hydrogen_bonds import *
-#from bioinf import PDBATOMFileReader
 
 for currentWildcard in sys.argv[1:]:
 
@@ -19,6 +18,7 @@ for currentWildcard in sys.argv[1:]:
 for donor in donorDict.itervalues():
 
 	for acceptor in acceptorDict.intervalues():
-		print 'bbq for you'
+		
+
 
 		

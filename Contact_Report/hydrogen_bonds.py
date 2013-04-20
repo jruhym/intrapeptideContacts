@@ -63,13 +63,19 @@ class AtomIQ(object):
                 self._is_donor = True
                 self._valence = currentDonorGroup.valence
                 self._H_bond_donor_radius = currentDonorGroup.H_bond_radius
+                self._max_num_H_donations = currentDonorGroup.max_num_H_bonds
         for currentAcceptorGroup in list_of_hbond_acceptor_groups:
             if pdb_atom_line.name in currentAcceptorGroup.atoms_str_tupl and \
                 self._res_name == currentAcceptorGroup.residue.upper():
                 self._is_acceptor = True
                 self._valence = currentAcceptorGroup.valence
                 self._H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
-    
+                self._max_num_H_acceptance = currentDonorGroup.max_num_H_bonds
+        if self._is_acceptor or self._is_donor:
+            self._participant = \
+                HBondParticipant.generate_participant_by_valence(self)
+
+
     def set_Residue(self, residue):
         assert isinstance(residue, ResidueIQ)
         assert residue.uid == self._resSeq
@@ -91,21 +97,24 @@ class AtomIQ(object):
     residue = property(lambda self: self._residue, set_Residue)
 
 
-class Hbond_participant(object):
+class HBondParticipant(object):
 
     def __init__(self, atom):
-        pass
+        assert isinstance(atom, AtomIQ)
+        self._atom = atom
 
     @staticmethod
-    def generate_participant_valence(self, atom):
+    def generate_participant_by_valence(self, atom):
         assert isinstance(atom, AtomIQ)
         if atom.valence == 'sp2':
-            return Sp2_Hbond_participant(atom)
+            return Sp2HBondParticipant(atom)
         elif atom.valence == 'sp3':
-            return Sp3_Hbond_participant(atom)
+            return Sp3HBondParticipant(atom)
+        #else should throw exception
 
 
-class Sp3_Hbond_participant(Hbond_participant):
+
+class Sp3HBondParticipant(HBondParticipant):
     def _distance_is_ok_to(self, M, P, partner):
 
         distance = norm(M - P)
@@ -113,7 +122,6 @@ class Sp3_Hbond_participant(Hbond_participant):
             return distance
         else:
             return False
-
 
     def _angle_is(self, ba, bc):
 
@@ -129,9 +137,9 @@ class Sp3_Hbond_participant(Hbond_participant):
     def _planarity_is_ok(self, P, M, MM, MMM):
         return True
 
-    def am_I_bonded_to_partner(self, parner):
+    def am_I_bonded_to_partner(self, parner, as_donor=True):
             
-        M = self._coordinates
+        M = self._atom._coordinates
         P = parner.coordinates
 
         if _distance_is_ok(M,P, partner):
@@ -153,8 +161,7 @@ class Sp3_Hbond_participant(Hbond_participant):
 
 
 
-
-class Sp2_Hbond_participant(Sp3_Hbond_participant):
+class Sp2HBondParticipant(Sp3HBondParticipant):
         
     def _planarity_is_ok(self, MtP, MtMM, MMtMMM):
         MMtM = -MtMM
