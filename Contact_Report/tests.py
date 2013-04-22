@@ -69,8 +69,10 @@ class TestPdbAtomFileReader(unittest.TestCase):
 		pdbfile = StringIO(pdb_contents)
 		reader = PDBATOMFileReader(pdbfile)
 		self._i = 0
+		self._atoms_Dict = {}
 		for atom in reader:
 			self._i += 1
+			self._atoms_Dict[atom.serial] = atom
 			if atom.name == 'CA':
 				self._CAs.append(atom)
 
@@ -82,6 +84,35 @@ class TestPdbAtomFileReader(unittest.TestCase):
 
 	def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
 		len(self._CAs[0].residue.atoms).should.equal(4)
+
+	def test_Ser41OG_should_donate_to_Gly37O(self):
+		self._atoms_Dict['94'].participant.can_I_bond_to_partner(
+			self._atoms_Dict['65']).should.be.ok
+	
+	def test_Ser41OG_should_be_a_donor(self):
+		self._atoms_Dict['94'].participant.is_donor.should.be.ok
+
+	def test_Ser41OG_valence_should_be_sp3(self):
+		(self._atoms_Dict['94'].participant.valence).should.equal('sp3')
+
+	def test_Ser41OG_H_bond_donor_radius_should_be_correct(self):
+		self._atoms_Dict['94'].participant.H_bond_donor_radius.should.equal(
+			1.7
+			)
+
+	def test_Ser41OG_max_number_of_donations_should_be_correct(self):
+		self._atoms_Dict['94'].participant.max_num_H_donations.should.equal(
+			1
+			)
+
+	def test_Ser41OG_NN_should_be_CB(self):
+		self._atoms_Dict['94'].participant.NN.should.equal('CB')
+
+	def test_Ser41OG_NNN_should_be_CB(self):
+		self._atoms_Dict['94'].participant.NN.should.equal('CA')
+
+
+
 
 
 

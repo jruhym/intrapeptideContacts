@@ -72,13 +72,12 @@ class AtomIQ(object):
 
 
 class HBondParticipant(object):
-    def __init__(self, atom, valence, 
+    def __init__(self, atom, 
         is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
         is_acceptor=False, H_bond_acceptor_radius=None, 
         max_num_H_acceptance=None):
         assert isinstance(atom, AtomIQ)
         self._atom = atom
-        self._valence = valence
         self._is_acceptor = is_acceptor
         self._is_donor = is_donor
         self._H_bond_acceptor_radius = H_bond_acceptor_radius
@@ -97,22 +96,32 @@ class HBondParticipant(object):
         H_bond_acceptor_radius = None
         max_num_H_acceptance = None
         for currentDonorGroup in list_of_hbond_donor_groups:
-            if atom.name in currentDonorGroup.atoms_str_tupl and \
-                atom.res_name == currentDonorGroup.residue.upper():
+            if (
+                atom.name in currentDonorGroup.atoms_str_tupl and \
+                atom.res_name == currentDonorGroup.residue.upper()
+                ) or (
+                    atom.name =='N' and \
+                    currentDonorGroup.residue == 'Peptide'
+                ):
                 is_donor = True
                 valence = currentDonorGroup.valence
                 H_bond_donor_radius = currentDonorGroup.H_bond_radius
                 max_num_H_donations = currentDonorGroup.max_num_H_bonds
         for currentAcceptorGroup in list_of_hbond_acceptor_groups:
-            if atom.name in currentAcceptorGroup.atoms_str_tupl and \
-                atom.res_name == currentAcceptorGroup.residue.upper():
+            if (
+                atom.name in currentAcceptorGroup.atoms_str_tupl and \
+                atom.res_name == currentAcceptorGroup.residue.upper()
+                ) or (
+                    atom.name =='O' and \
+                    currentAcceptorGroup.residue == 'Peptide'
+                ):
                 is_acceptor = True
                 valence = currentAcceptorGroup.valence
                 H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
                 max_num_H_acceptance = currentDonorGroup.max_num_H_bonds
         if is_acceptor or is_donor:
             if valence == 'sp2':
-                return Sp2HBondParticipant(atom,  
+                return Sp2HBondParticipant(atom, 
                     is_donor, H_bond_donor_radius, max_num_H_donations,
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance
                     )
@@ -122,7 +131,7 @@ class HBondParticipant(object):
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance
                     )
         else:
-            return False
+            return None
 
     is_acceptor = property(lambda self: is_acceptor)
     is_donor = property(lambda self: self._is_donor)
@@ -132,10 +141,13 @@ class HBondParticipant(object):
     max_num_H_acceptance = property(lambda self: self._max_num_H_acceptance)
     max_num_H_donations = property(lambda self: self._max_num_H_donations)
 
+
+
 class Sp3HBondParticipant(HBondParticipant):
     def _distance_is_ok(self, M, P, partner):
         distance = norm(M - P)
-        if distance < self._H_bond_radius + parner.H_bond_radius:
+        if distance < self._H_bond_donor_radius + \
+            partner.participant.H_bond_acceptor_radius:
             return distance
         else:
             return False
@@ -146,7 +158,7 @@ class Sp3HBondParticipant(HBondParticipant):
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
     def _angle_is_ok(self, MtP, MtMM):
-        angle = _angle_is(MtP, MtMM)
+        angle = self._angle_is(MtP, MtMM)
         if angle < 180. and angle > self._angle_min:
             return True
         else:
@@ -155,21 +167,21 @@ class Sp3HBondParticipant(HBondParticipant):
     def _planarity_is_ok(self, P, M, MM, MMM):
         return True
 
-    def can_I_bond_to_partner(self, parner, as_donor=True):
+    def can_I_bond_to_partner(self, partner, as_donor=True):
         M = self._atom.coordinates
-        P = parner.coordinates
-        distance_or_is_ok = _distance_is_ok(M, P, partner)
+        P = partner.coordinates
+        distance_or_is_ok = self._distance_is_ok(M, P, partner)
         if distance_or_is_ok:
             MM = self._atom.residue.atoms[self._atom.NN].coordinates
             MtMM = MM - M
             MtP = P - M
-            if _angle_is_ok(MtP, MtMM):
+            if self._angle_is_ok(MtP, MtMM):
                 MMM = self._atom.residue.atoms[self._atom.NNN]
                 MMtMMM = MMM - MM
-                if _planarity_is_ok(P, M, MM, MMM):
+                if self._planarity_is_ok(P, M, MM, MMM):
                     return True
     
-    valence = property('sp3')
+    valence = property(lambda valence:'sp3')
 
 
 
@@ -190,7 +202,7 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
         else:
             return False
 
-    valence = property('sp2')
+    valence = property(lambda valence: 'sp2')
 
 
 
