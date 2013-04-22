@@ -111,6 +111,17 @@ class TestPdbAtomFileReader(unittest.TestCase):
 	def test_Ser41OG_NNN_should_be_CA(self):
 		self._atoms_Dict['94'].participant.NNN.should.equal('CA')
 
+	def test_angle_between_SerOG_its_NN_and_GlyO_should_be_correct(self):
+		OG = self._atoms_Dict['94']
+		b = OG.coordinates
+		CB = OG.residue.atoms[OG.participant.NN]
+		a = CB.coordinates
+		O = self._atoms_Dict['65']
+		c = O.coordinates
+		ba = a - b
+		bc = c - b
+		abs(Sp3HBondParticipant.angle_is(ba, bc) - 96.8).should.be.below(0.1)
+
 
 
 
