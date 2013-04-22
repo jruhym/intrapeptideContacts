@@ -108,8 +108,8 @@ class TestPdbAtomFileReader(unittest.TestCase):
 	def test_Ser41OG_NN_should_be_CB(self):
 		self._atoms_Dict['94'].participant.NN.should.equal('CB')
 
-	def test_Ser41OG_NNN_should_be_CB(self):
-		self._atoms_Dict['94'].participant.NN.should.equal('CA')
+	def test_Ser41OG_NNN_should_be_CA(self):
+		self._atoms_Dict['94'].participant.NNN.should.equal('CA')
 
 
 

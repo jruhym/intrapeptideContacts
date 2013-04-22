@@ -75,7 +75,7 @@ class HBondParticipant(object):
     def __init__(self, atom, 
         is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
         is_acceptor=False, H_bond_acceptor_radius=None, 
-        max_num_H_acceptance=None):
+        max_num_H_acceptance=None, NN=None, NNN=None):
         assert isinstance(atom, AtomIQ)
         self._atom = atom
         self._is_acceptor = is_acceptor
@@ -84,6 +84,10 @@ class HBondParticipant(object):
         self._H_bond_donor_radius = H_bond_donor_radius
         self._max_num_H_acceptance = max_num_H_acceptance
         self._max_num_H_donations = max_num_H_donations
+        # tried to set NN as atoms but residue not yet set by this point so 
+        # leave NN as string to index residue.atoms later.
+        self._NN = NN
+        self._NNN = NNN
 
     @staticmethod
     def generate_participant_by_valence(atom):
@@ -95,6 +99,8 @@ class HBondParticipant(object):
         max_num_H_donations = None
         H_bond_acceptor_radius = None
         max_num_H_acceptance = None
+        NN = None
+        NNN = None
         for currentDonorGroup in list_of_hbond_donor_groups:
             if (
                 atom.name in currentDonorGroup.atoms_str_tupl and \
@@ -107,7 +113,9 @@ class HBondParticipant(object):
                 valence = currentDonorGroup.valence
                 H_bond_donor_radius = currentDonorGroup.H_bond_radius
                 max_num_H_donations = currentDonorGroup.max_num_H_bonds
-                
+                NN = currentDonorGroup.NN
+                NNN = currentDonorGroup.NNN
+
         for currentAcceptorGroup in list_of_hbond_acceptor_groups:
             if (
                 atom.name in currentAcceptorGroup.atoms_str_tupl and \
@@ -120,27 +128,33 @@ class HBondParticipant(object):
                 valence = currentAcceptorGroup.valence
                 H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
                 max_num_H_acceptance = currentDonorGroup.max_num_H_bonds
+                NN = currentAcceptorGroup.NN
+                NNN = currentAcceptorGroup.NNN
         if is_acceptor or is_donor:
             if valence == 'sp2':
                 return Sp2HBondParticipant(atom, 
                     is_donor, H_bond_donor_radius, max_num_H_donations,
-                    is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance
+                    is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
+                    NN, NNN
                     )
             elif valence == 'sp3':
                 return Sp3HBondParticipant(atom,
                     is_donor, H_bond_donor_radius, max_num_H_donations,
-                    is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance
+                    is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
+                    NN, NNN
                     )
         else:
             return None
 
-    is_acceptor = property(lambda self: is_acceptor)
+    is_acceptor = property(lambda self: self._is_acceptor)
     is_donor = property(lambda self: self._is_donor)
     H_bond_acceptor_radius = property(
         lambda self: self._H_bond_acceptor_radius)
     H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
     max_num_H_acceptance = property(lambda self: self._max_num_H_acceptance)
     max_num_H_donations = property(lambda self: self._max_num_H_donations)
+    NN = property(lambda self: self._NN)
+    NNN = property(lambda self: self._NNN)
 
 
 
@@ -173,11 +187,11 @@ class Sp3HBondParticipant(HBondParticipant):
         P = partner.coordinates
         distance_or_is_ok = self._distance_is_ok(M, P, partner)
         if distance_or_is_ok:
-            MM = self._atom.residue.atoms[self._atom.NN].coordinates
+            MM = self._atom.residue.atoms[self._NN].coordinates
             MtMM = MM - M
             MtP = P - M
             if self._angle_is_ok(MtP, MtMM):
-                MMM = self._atom.residue.atoms[self._atom.NNN]
+                MMM = self._atom.residue.atoms[self._NNN].coordinates
                 MMtMMM = MMM - MM
                 if self._planarity_is_ok(P, M, MM, MMM):
                     return True

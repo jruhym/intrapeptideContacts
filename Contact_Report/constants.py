@@ -5,8 +5,8 @@ class HBondGroup(object):
 	residue = property(lambda self: self._residue)
 	H_bond_radius = property(lambda self: self._H_bond_radius)
 	max_num_H_bonds = property(lambda self: self._max_num_H_bonds)
-	NN = property(lambda self: self_.NN)
-	NNN = property(lambda self: self_.NNN)
+	NN = property(lambda self: self._NN)
+	NNN = property(lambda self: self._NNN)
 
 	def __init__(self, valence=None, atoms_str_tupl=None, residue=None, 
 			H_bond_radius=None, max_num_H_bonds=None, NN=None, NNN=None):
