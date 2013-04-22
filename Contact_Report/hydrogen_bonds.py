@@ -30,7 +30,6 @@ class PDBATOMFileReader(object):#FileReader):
         for atom in self._atoms.itervalues():
             atom.set_Residue(self._residues[atom.uid])
 
-
     def __iter__(self):
         for atom in self._atoms:
             yield self._atoms[atom]
@@ -38,8 +37,6 @@ class PDBATOMFileReader(object):#FileReader):
 
 
 class AtomIQ(object):
-
-        
     def __init__(self, pdb_line):
         assert isinstance(pdb_line, basestring) 
         pdb_atom_line = bioinf.PDBAtomLine.parse_string(pdb_line)   
@@ -49,15 +46,11 @@ class AtomIQ(object):
         self._serial = pdb_atom_line.serial
         self._is_donor = False
         self._is_acceptor = False
-        #self._valence = None
-        #self._H_bond_donor_radius = None
-        #self._H_bond_acceptor_radius = None
         self._residue = None
         self._coordinates = array([float(pdb_atom_line.x),
             float(pdb_atom_line.y),
             float(pdb_atom_line.z)
             ])
-        #self._can_be_H_Bond_participant = False
         self._participant = \
             HBondParticipant.generate_participant_by_valence(self)
 
@@ -73,20 +66,12 @@ class AtomIQ(object):
     is_acceptor = property(lambda self: self._is_acceptor)
     coordinates = property(lambda self: self._coordinates)
     serial = property(lambda self: self._serial)
-    #can_be_H_Bond_participant = property(
-    #    lambda self: self._can_be_H_Bond_participant)
-    #valence = property(lambda self: self._valence)
-    #H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
-    #H_bond_acceptor_radius = property(
-        #lambda self: self._H_bond_acceptor_radius
-        #)
     residue = property(lambda self: self._residue, set_Residue)
     participant = property(lambda self: self._participant)
 
 
 
 class HBondParticipant(object):
-
     def __init__(self, atom, valence, 
         is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
         is_acceptor=False, H_bond_acceptor_radius=None, 
@@ -126,7 +111,6 @@ class HBondParticipant(object):
                 H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
                 max_num_H_acceptance = currentDonorGroup.max_num_H_bonds
         if is_acceptor or is_donor:
-
             if valence == 'sp2':
                 return Sp2HBondParticipant(atom,  
                     is_donor, H_bond_donor_radius, max_num_H_donations,
@@ -139,7 +123,6 @@ class HBondParticipant(object):
                     )
         else:
             return False
-        #else should throw exception
 
     is_acceptor = property(lambda self: is_acceptor)
     is_donor = property(lambda self: self._is_donor)
@@ -190,8 +173,7 @@ class Sp3HBondParticipant(HBondParticipant):
 
 
 
-class Sp2HBondParticipant(Sp3HBondParticipant):
-        
+class Sp2HBondParticipant(Sp3HBondParticipant):        
     def _planarity_is_ok(self, MtP, MtMM, MMtMMM):
         MMtM = -MtMM
         my_plane_norm = cross(MMtMMM, MMtM)
@@ -210,8 +192,9 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
 
     valence = property('sp2')
 
-class ResidueIQ(object):
 
+
+class ResidueIQ(object):
     def __init__(self, atom):
         assert isinstance(atom, AtomIQ)
         self._atoms = {
