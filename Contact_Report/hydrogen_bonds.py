@@ -174,7 +174,7 @@ class Sp3HBondParticipant(HBondParticipant):
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
     def _angle_is_ok(self, MtP, MtMM):
-        angle = angle_is(MtP, MtMM)
+        angle = self.angle_is(MtP, MtMM)
         if angle < 180. and angle > self._angle_min:
             return True
         else:
