@@ -11,10 +11,11 @@ for currentWildcard in sys.argv[1:]:
 		donorDict = {}
 		acceptorDict = {}
 		for atom in reader:
-			if atom.is_donor:
-				donorDict[atom.serial] = atom
-			if atom.is_acceptor:
-				acceptorDict[atom.serial] = atom
+			if atom.participant != False:
+				if atom.participant.is_donor:
+					donorDict[atom.serial] = atom
+				if atom.participant.is_acceptor:
+					acceptorDict[atom.serial] = atom
 for donor in donorDict.itervalues():
 
 	for acceptor in acceptorDict.intervalues():

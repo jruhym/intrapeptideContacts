@@ -57,33 +57,14 @@ class AtomIQ(object):
             float(pdb_atom_line.y),
             float(pdb_atom_line.z)
             ])
-        self._can_be_H_Bond_participant = False
-        for currentDonorGroup in list_of_hbond_donor_groups:
-            if self._name in currentDonorGroup.atoms_str_tupl and \
-                self._res_name == currentDonorGroup.residue.upper():
-                self._is_donor = True
-                self._valence = currentDonorGroup.valence
-                self._H_bond_donor_radius = currentDonorGroup.H_bond_radius
-                self._max_num_H_donations = currentDonorGroup.max_num_H_bonds
-        for currentAcceptorGroup in list_of_hbond_acceptor_groups:
-            if pdb_atom_line.name in currentAcceptorGroup.atoms_str_tupl and \
-                self._res_name == currentAcceptorGroup.residue.upper():
-                self._is_acceptor = True
-                self._valence = currentAcceptorGroup.valence
-                self._H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
-                self._max_num_H_acceptance = currentDonorGroup.max_num_H_bonds
-        if self._is_acceptor or self._is_donor:
-            self._participant = \
-                HBondParticipant.generate_participant_by_valence(
-                    self, self._valence
-                    )
-
+        #self._can_be_H_Bond_participant = False
+        self._participant = \
+            HBondParticipant.generate_participant_by_valence(self)
 
     def set_Residue(self, residue):
         assert isinstance(residue, ResidueIQ)
         assert residue.uid == self._resSeq
         self._residue = residue     
-
 
     res_name = property(lambda self: self._res_name)
     uid = property(lambda self: self._resSeq)
@@ -92,32 +73,81 @@ class AtomIQ(object):
     is_acceptor = property(lambda self: self._is_acceptor)
     coordinates = property(lambda self: self._coordinates)
     serial = property(lambda self: self._serial)
-    can_be_H_Bond_participant = property(
-        lambda self: self._can_be_H_Bond_participant)
+    #can_be_H_Bond_participant = property(
+    #    lambda self: self._can_be_H_Bond_participant)
     #valence = property(lambda self: self._valence)
     #H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
     #H_bond_acceptor_radius = property(
         #lambda self: self._H_bond_acceptor_radius
         #)
     residue = property(lambda self: self._residue, set_Residue)
+    participant = property(lambda self: self._participant)
+
 
 
 class HBondParticipant(object):
 
-    def __init__(self, atom):
+    def __init__(self, atom, valence, 
+        is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
+        is_acceptor=False, H_bond_acceptor_radius=None, 
+        max_num_H_acceptance=None):
         assert isinstance(atom, AtomIQ)
         self._atom = atom
+        self._valence = valence
+        self._is_acceptor = is_acceptor
+        self._is_donor = is_donor
+        self._H_bond_acceptor_radius = H_bond_acceptor_radius
+        self._H_bond_donor_radius = H_bond_donor_radius
+        self._max_num_H_acceptance = max_num_H_acceptance
+        self._max_num_H_donations = max_num_H_donations
 
     @staticmethod
-    def generate_participant_by_valence(atom, valence):
+    def generate_participant_by_valence(atom):
         assert isinstance(atom, AtomIQ)
-        if valence == 'sp2':
-            return Sp2HBondParticipant(atom)
-        elif valence == 'sp3':
-            return Sp3HBondParticipant(atom)
+        is_acceptor = False
+        is_donor = False
+        valence = None
+        H_bond_donor_radius = None
+        max_num_H_donations = None
+        H_bond_acceptor_radius = None
+        max_num_H_acceptance = None
+        for currentDonorGroup in list_of_hbond_donor_groups:
+            if atom.name in currentDonorGroup.atoms_str_tupl and \
+                atom.res_name == currentDonorGroup.residue.upper():
+                is_donor = True
+                valence = currentDonorGroup.valence
+                H_bond_donor_radius = currentDonorGroup.H_bond_radius
+                max_num_H_donations = currentDonorGroup.max_num_H_bonds
+        for currentAcceptorGroup in list_of_hbond_acceptor_groups:
+            if atom.name in currentAcceptorGroup.atoms_str_tupl and \
+                atom.res_name == currentAcceptorGroup.residue.upper():
+                is_acceptor = True
+                valence = currentAcceptorGroup.valence
+                H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
+                max_num_H_acceptance = currentDonorGroup.max_num_H_bonds
+        if is_acceptor or is_donor:
+
+            if valence == 'sp2':
+                return Sp2HBondParticipant(atom,  
+                    is_donor, H_bond_donor_radius, max_num_H_donations,
+                    is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance
+                    )
+            elif valence == 'sp3':
+                return Sp3HBondParticipant(atom,
+                    is_donor, H_bond_donor_radius, max_num_H_donations,
+                    is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance
+                    )
+        else:
+            return False
         #else should throw exception
 
-
+    is_acceptor = property(lambda self: is_acceptor)
+    is_donor = property(lambda self: self._is_donor)
+    H_bond_acceptor_radius = property(
+        lambda self: self._H_bond_acceptor_radius)
+    H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
+    max_num_H_acceptance = property(lambda self: self._max_num_H_acceptance)
+    max_num_H_donations = property(lambda self: self._max_num_H_donations)
 
 class Sp3HBondParticipant(HBondParticipant):
     def _distance_is_ok(self, M, P, partner):
@@ -156,8 +186,7 @@ class Sp3HBondParticipant(HBondParticipant):
                 if _planarity_is_ok(P, M, MM, MMM):
                     return True
     
-    #def    
-    H_bond_radius = property(lambda self: self._H_bond_radius)
+    valence = property('sp3')
 
 
 
@@ -179,6 +208,7 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
         else:
             return False
 
+    valence = property('sp2')
 
 class ResidueIQ(object):
 
