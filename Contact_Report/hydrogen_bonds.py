@@ -1,5 +1,5 @@
 import bioinf
-from numpy import array, dot, arccos, rad2deg
+from numpy import array, dot, arccos, rad2deg, ndarray
 from numpy.linalg import norm
 from .constants import *
 from collections import OrderedDict
@@ -89,7 +89,7 @@ class AtomIQ(object):
     is_acceptor = property(lambda self: self._is_acceptor)
     coordinates = property(lambda self: self._coordinates)
     serial = property(lambda self: self._serial)
-    #valence = property(lambda self: self._valence)
+    valence = property(lambda self: self._valence)
     #H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
     #H_bond_acceptor_radius = property(
         #lambda self: self._H_bond_acceptor_radius
@@ -104,7 +104,7 @@ class HBondParticipant(object):
         self._atom = atom
 
     @staticmethod
-    def generate_participant_by_valence(self, atom):
+    def generate_participant_by_valence(atom):
         assert isinstance(atom, AtomIQ)
         if atom.valence == 'sp2':
             return Sp2HBondParticipant(atom)
@@ -116,7 +116,6 @@ class HBondParticipant(object):
 
 class Sp3HBondParticipant(HBondParticipant):
     def _distance_is_ok(self, M, P, partner):
-
         distance = norm(M - P)
         if distance < self._H_bond_radius + parner.H_bond_radius:
             return distance
@@ -124,7 +123,8 @@ class Sp3HBondParticipant(HBondParticipant):
             return False
 
     def _angle_is(self, ba, bc):
-
+        assert isinstance(ba, ndarray)
+        assert isinstance(bc, ndarray)
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
     def _angle_is_ok(self, MtP, MtMM):
@@ -151,7 +151,7 @@ class Sp3HBondParticipant(HBondParticipant):
                 if _planarity_is_ok(P, M, MM, MMM):
                     return True
     
-    def    
+    #def    
     H_bond_radius = property(lambda self: self._H_bond_radius)
 
 

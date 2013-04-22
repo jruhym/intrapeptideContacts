@@ -4,7 +4,7 @@ class HBondGroup(object):
 	atoms_str_tupl = property(lambda self: self._atoms_str_tupl)
 	residue = property(lambda self: self._residue)
 	H_bond_radius = property(lambda self: self._H_bond_radius)
-	max_num_H_bonds = property(lambda self: self_.max_num_H_bonds)
+	max_num_H_bonds = property(lambda self: self._max_num_H_bonds)
 	NN = property(lambda self: self_.NN)
 	NNN = property(lambda self: self_.NNN)
 
