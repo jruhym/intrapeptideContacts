@@ -73,7 +73,9 @@ class AtomIQ(object):
                 self._max_num_H_acceptance = currentDonorGroup.max_num_H_bonds
         if self._is_acceptor or self._is_donor:
             self._participant = \
-                HBondParticipant.generate_participant_by_valence(self)
+                HBondParticipant.generate_participant_by_valence(
+                    self, self._valence
+                    )
 
 
     def set_Residue(self, residue):
@@ -89,7 +91,7 @@ class AtomIQ(object):
     is_acceptor = property(lambda self: self._is_acceptor)
     coordinates = property(lambda self: self._coordinates)
     serial = property(lambda self: self._serial)
-    valence = property(lambda self: self._valence)
+    #valence = property(lambda self: self._valence)
     #H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
     #H_bond_acceptor_radius = property(
         #lambda self: self._H_bond_acceptor_radius
@@ -104,11 +106,11 @@ class HBondParticipant(object):
         self._atom = atom
 
     @staticmethod
-    def generate_participant_by_valence(atom):
+    def generate_participant_by_valence(atom, valence):
         assert isinstance(atom, AtomIQ)
-        if atom.valence == 'sp2':
+        if valence == 'sp2':
             return Sp2HBondParticipant(atom)
-        elif atom.valence == 'sp3':
+        elif valence == 'sp3':
             return Sp3HBondParticipant(atom)
         #else should throw exception
 
