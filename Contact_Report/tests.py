@@ -2,7 +2,6 @@ import unittest
 import sure
 from .hydrogen_bonds import *
 from .constants import *
-#from numpy.testing import assert_array_equal
 from StringIO import StringIO
 
 
