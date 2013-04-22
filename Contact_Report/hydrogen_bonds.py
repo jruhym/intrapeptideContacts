@@ -57,6 +57,7 @@ class AtomIQ(object):
             float(pdb_atom_line.y),
             float(pdb_atom_line.z)
             ])
+        self._can_be_H_Bond_participant = False
         for currentDonorGroup in list_of_hbond_donor_groups:
             if self._name in currentDonorGroup.atoms_str_tupl and \
                 self._res_name == currentDonorGroup.residue.upper():
@@ -91,6 +92,8 @@ class AtomIQ(object):
     is_acceptor = property(lambda self: self._is_acceptor)
     coordinates = property(lambda self: self._coordinates)
     serial = property(lambda self: self._serial)
+    can_be_H_Bond_participant = property(
+        lambda self: self._can_be_H_Bond_participant)
     #valence = property(lambda self: self._valence)
     #H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
     #H_bond_acceptor_radius = property(
