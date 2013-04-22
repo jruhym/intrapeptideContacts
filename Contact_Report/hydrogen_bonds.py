@@ -107,6 +107,7 @@ class HBondParticipant(object):
                 valence = currentDonorGroup.valence
                 H_bond_donor_radius = currentDonorGroup.H_bond_radius
                 max_num_H_donations = currentDonorGroup.max_num_H_bonds
+                
         for currentAcceptorGroup in list_of_hbond_acceptor_groups:
             if (
                 atom.name in currentAcceptorGroup.atoms_str_tupl and \
