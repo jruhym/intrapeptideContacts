@@ -1,5 +1,5 @@
 import bioinf
-from numpy import array, dot, arccos, rad2deg, ndarray
+from numpy import array, dot, arccos, rad2deg, ndarray, cross
 from numpy.linalg import norm
 from .constants import *
 from collections import OrderedDict
@@ -201,7 +201,24 @@ class Sp3HBondParticipant(HBondParticipant):
 
 
 
-class Sp2HBondParticipant(Sp3HBondParticipant):        
+class Sp2HBondParticipant(Sp3HBondParticipant):
+    
+    @staticmethod
+    def planarity_is(ba, bc, cd):
+        my_plane_norm = cross(ba, bc)
+        perndclr_bc_in_plane = cross(bc, my_plane_norm)
+        if dot(cd, perndclr_bc_in_plane) > 0.:
+            torsion_angle_center = 0.
+        else: 
+            torsion_angle_center = 180.
+        plane_norm_w_partner = cross(-bc, cd)
+
+        torsion_angle = torsion_angle_center - Sp3HBondParticipant.angle_is(
+            my_plane_norm, plane_norm_w_partner)
+        print torsion_angle_center
+        return torsion_angle
+
+
     def _planarity_is_ok(self, MtP, MtMM, MMtMMM):
         MMtM = -MtMM
         my_plane_norm = cross(MMtMMM, MMtM)
