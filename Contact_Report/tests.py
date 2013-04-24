@@ -89,6 +89,10 @@ class TestPdbAtomFileReader(unittest.TestCase):
 		self._atoms_Dict['94'].participant.can_I_bond_to_partner(
 			self._atoms_Dict['65']).should.be.ok
 	
+	def test_donation_between_Ser41OG_and_Gly37O_should_be_mutual(self):
+		self._atoms_Dict['94'].participant.is_H_bond_mutual(
+			self._atoms_Dict['65']).should.be.ok
+	
 	def test_Ser41OG_should_be_a_donor(self):
 		self._atoms_Dict['94'].participant.is_donor.should.be.ok
 
