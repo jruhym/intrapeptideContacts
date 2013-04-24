@@ -16,7 +16,7 @@ class PDBATOMFileReader(object):#FileReader):
             f = file_or_path
         self._atoms = OrderedDict()
         self._residues = OrderedDict()
-        f.next()
+        #f.next()
         for line in f:
             clean_line = line.strip()
             if clean_line.startswith('ATOM'):
@@ -137,7 +137,7 @@ class HBondParticipant(object):
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
                     NN, NNN
                     )
-            elif valence == 'sp3':
+            else valence == 'sp3':
                 return Sp3HBondParticipant(atom,
                     is_donor, H_bond_donor_radius, max_num_H_donations,
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
@@ -184,21 +184,23 @@ class Sp3HBondParticipant(HBondParticipant):
         return True
 
     def is_H_bond_mutual(self, partner):
-        pass
-
-    def can_I_bond_to_partner(self, partner, as_donor=True):
         M = self._atom.coordinates
         P = partner.coordinates
         distance_or_is_ok = self._distance_is_ok(M, P, partner)
         if distance_or_is_ok:
-            MM = self._atom.residue.atoms[self._NN].coordinates
-            MtMM = MM - M
-            MtP = P - M
-            if self._angle_is_ok(MtP, MtMM):
-                MMM = self._atom.residue.atoms[self._NNN].coordinates
-                MMtMMM = MMM - MM
-                if self._planarity_is_ok(P, M, MM, MMM):
-                    return True
+            return _distance_is_ok and\
+                can_I_bond_to_partner(self, partner) and\
+                can_I_bond_to_partner(partner, self)
+
+    def can_I_bond_to_partner(self, partner):
+        MM = self._atom.residue.atoms[self._NN].coordinates
+        MtMM = MM - M
+        MtP = P - M
+        if self._angle_is_ok(MtP, MtMM):
+            MMM = self._atom.residue.atoms[self._NNN].coordinates
+            MMtMMM = MMM - MM
+            if self._planarity_is_ok(P, M, MM, MMM):
+                return True
     
     valence = property(lambda valence:'sp3')
 
