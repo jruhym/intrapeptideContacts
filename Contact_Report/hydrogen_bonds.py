@@ -183,6 +183,9 @@ class Sp3HBondParticipant(HBondParticipant):
     def _planarity_is_ok(self, P, M, MM, MMM):
         return True
 
+    def is_H_bond_mutual(self, partner):
+        pass
+
     def can_I_bond_to_partner(self, partner, as_donor=True):
         M = self._atom.coordinates
         P = partner.coordinates
