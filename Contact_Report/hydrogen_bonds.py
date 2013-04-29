@@ -16,11 +16,8 @@ class PDBATOMFileReader(object):#FileReader):
             f = file_or_path
         self._atoms = OrderedDict()
         self._residues = OrderedDict()
-<<<<<<< HEAD
         #f.next()
-=======
         f.next()
->>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
         for line in f:
             clean_line = line.strip()
             if clean_line.startswith('ATOM'):
@@ -141,11 +138,8 @@ class HBondParticipant(object):
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
                     NN, NNN
                     )
-<<<<<<< HEAD
-            else valence == 'sp3':
-=======
+ 
             elif valence == 'sp3':
->>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
                 return Sp3HBondParticipant(atom,
                     is_donor, H_bond_donor_radius, max_num_H_donations,
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
@@ -191,29 +185,19 @@ class Sp3HBondParticipant(HBondParticipant):
     def _planarity_is_ok(self, P, M, MM, MMM):
         return True
 
-    def is_H_bond_mutual(self, partner):
-<<<<<<< HEAD
-<<<<<<< HEAD
-        pass
-
-    def can_I_bond_to_partner(self, partner, as_donor=True):
-=======
->>>>>>> 3f41ce754fe19262f533dec0fe07e2a2e41ec73b
-=======
-        pass
-
-    def can_I_bond_to_partner(self, partner, as_donor=True):
->>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
+    def is_H_bond_mutual(self, partner, as_donor=True):
         M = self._atom.coordinates
         P = partner.coordinates
         distance_or_is_ok = self._distance_is_ok(M, P, partner)
         if distance_or_is_ok:
-<<<<<<< HEAD
+ 
             return _distance_is_ok and\
                 can_I_bond_to_partner(self, partner) and\
                 can_I_bond_to_partner(partner, self)
 
     def can_I_bond_to_partner(self, partner):
+        M = self._atom.coordinates
+        P = partner.atom.coordinates
         MM = self._atom.residue.atoms[self._NN].coordinates
         MtMM = MM - M
         MtP = P - M
@@ -222,16 +206,14 @@ class Sp3HBondParticipant(HBondParticipant):
             MMtMMM = MMM - MM
             if self._planarity_is_ok(P, M, MM, MMM):
                 return True
-=======
             MM = self._atom.residue.atoms[self._NN].coordinates
             MtMM = MM - M
-            MtP = P - M
+            #MtP = P - M
             if self._angle_is_ok(MtP, MtMM):
                 MMM = self._atom.residue.atoms[self._NNN].coordinates
                 MMtMMM = MMM - MM
                 if self._planarity_is_ok(P, M, MM, MMM):
                     return True
->>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
     
     valence = property(lambda valence:'sp3')
 

@@ -56,8 +56,6 @@ ATOM     91  C   SER A  41     -50.651  14.403  11.269  1.00 80.21           C
 ATOM     92  O   SER A  41     -50.521  15.181  10.324  1.00 82.42           O  
 ATOM     93  CB  SER A  41     -52.104  12.394  10.976  1.00 79.47           C  
 ATOM     94  OG  SER A  41     -52.128  11.044  10.561  1.00 82.68           O  
-<<<<<<< HEAD
-=======
 ATOM     95  N   LEU A  42     -50.778  14.805  12.534  1.00 79.85           N  
 ATOM     96  CA  LEU A  42     -50.675  16.219  12.908  1.00 79.83           C  
 ATOM     97  C   LEU A  42     -49.256  16.752  12.687  1.00 78.29           C  
@@ -90,7 +88,6 @@ ATOM   3510  CG  GLU A 338     -52.343  40.279   4.365  1.00 79.56           C
 ATOM   3511  CD  GLU A 338     -52.695  39.442   3.113  1.00 85.28           C  
 ATOM   3512  OE1 GLU A 338     -52.500  38.207   3.087  1.00 91.20           O  
 ATOM   3513  OE2 GLU A 338     -53.176  40.048   2.131  1.00 89.12           O  
->>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
 
 """
 
@@ -112,17 +109,13 @@ class TestPdbAtomFileReader(unittest.TestCase):
 				self._CAs.append(atom)
 
 	def test_reader_should_yield_correct_number_of_atoms(self):
-<<<<<<< HEAD
-		self._i.should.equal(33)
-	
-	def test_reader_should_yield_correct_number_of_residues(self):
-		len(self._CAs).should.equal(5)
-=======
 		self._i.should.equal(59)
 	
 	def test_reader_should_yield_correct_number_of_residues(self):
+		len(self._CAs).should.equal(5)
+	
+	def test_reader_should_yield_correct_number_of_residues(self):
 		len(self._CAs).should.equal(8)
->>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
 
 	def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
 		len(self._CAs[0].residue.atoms).should.equal(4)
@@ -182,8 +175,6 @@ class TestPdbAtomFileReader(unittest.TestCase):
 		cd = d - c
 		(Sp2HBondParticipant.planarity_is(cd, bc, ba) - 71.2).should.be.below(
 			0.1)
-<<<<<<< HEAD
-=======
 
 	def test_should_find_hyd_interaction_bn_ILE38CG2_and_LEU42CD1(self):
 		self._atoms_Dict['72'].participant.do_I_interact_HYDly_w(
@@ -192,4 +183,4 @@ class TestPdbAtomFileReader(unittest.TestCase):
 	def test_should_find_ion_bond_bn_LYS60NZ_and_GLU338OE1(self):
 		self._atoms_Dict['232'].participant.do_I_bond_IONly_w(
 			self._atoms_Dict['3512']).should.be.ok
->>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
+
