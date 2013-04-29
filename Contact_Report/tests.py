@@ -56,6 +56,41 @@ ATOM     91  C   SER A  41     -50.651  14.403  11.269  1.00 80.21           C
 ATOM     92  O   SER A  41     -50.521  15.181  10.324  1.00 82.42           O  
 ATOM     93  CB  SER A  41     -52.104  12.394  10.976  1.00 79.47           C  
 ATOM     94  OG  SER A  41     -52.128  11.044  10.561  1.00 82.68           O  
+<<<<<<< HEAD
+=======
+ATOM     95  N   LEU A  42     -50.778  14.805  12.534  1.00 79.85           N  
+ATOM     96  CA  LEU A  42     -50.675  16.219  12.908  1.00 79.83           C  
+ATOM     97  C   LEU A  42     -49.256  16.752  12.687  1.00 78.29           C  
+ATOM     98  O   LEU A  42     -49.093  17.917  12.355  1.00 80.15           O  
+ATOM     99  CB  LEU A  42     -51.106  16.448  14.364  1.00 80.71           C  
+ATOM    100  CG  LEU A  42     -52.586  16.242  14.714  1.00 81.76           C  
+ATOM    101  CD1 LEU A  42     -52.774  16.400  16.213  1.00 83.86           C  
+ATOM    102  CD2 LEU A  42     -53.508  17.191  13.956  1.00 82.80           C  
+.
+.
+.
+ATOM    224  N   LYS A  60     -45.271  36.012  -2.184  1.00 76.98           N  
+ATOM    225  CA  LYS A  60     -46.336  37.010  -2.323  1.00 76.24           C  
+ATOM    226  C   LYS A  60     -45.932  38.438  -1.965  1.00 77.94           C  
+ATOM    227  O   LYS A  60     -46.282  39.371  -2.694  1.00 75.40           O  
+ATOM    228  CB  LYS A  60     -47.532  36.605  -1.466  1.00 75.25           C  
+ATOM    229  CG  LYS A  60     -48.667  37.578  -1.530  1.00 77.75           C  
+ATOM    230  CD  LYS A  60     -49.959  36.950  -1.164  1.00 78.52           C  
+ATOM    231  CE  LYS A  60     -51.028  37.983  -1.189  1.00 79.74           C  
+ATOM    232  NZ  LYS A  60     -52.299  37.333  -1.081  1.00 83.19           N  
+.
+.
+.
+ATOM   3505  N   GLU A 338     -51.900  38.271   7.622  1.00 76.38           N  
+ATOM   3506  CA  GLU A 338     -52.591  38.694   6.411  1.00 74.47           C  
+ATOM   3507  C   GLU A 338     -53.085  37.448   5.670  1.00 73.86           C  
+ATOM   3508  O   GLU A 338     -54.258  37.370   5.282  1.00 73.06           O  
+ATOM   3509  CB  GLU A 338     -51.659  39.512   5.516  1.00 75.29           C  
+ATOM   3510  CG  GLU A 338     -52.343  40.279   4.365  1.00 79.56           C  
+ATOM   3511  CD  GLU A 338     -52.695  39.442   3.113  1.00 85.28           C  
+ATOM   3512  OE1 GLU A 338     -52.500  38.207   3.087  1.00 91.20           O  
+ATOM   3513  OE2 GLU A 338     -53.176  40.048   2.131  1.00 89.12           O  
+>>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
 
 """
 
@@ -77,10 +112,17 @@ class TestPdbAtomFileReader(unittest.TestCase):
 				self._CAs.append(atom)
 
 	def test_reader_should_yield_correct_number_of_atoms(self):
+<<<<<<< HEAD
 		self._i.should.equal(33)
 	
 	def test_reader_should_yield_correct_number_of_residues(self):
 		len(self._CAs).should.equal(5)
+=======
+		self._i.should.equal(59)
+	
+	def test_reader_should_yield_correct_number_of_residues(self):
+		len(self._CAs).should.equal(8)
+>>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
 
 	def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
 		len(self._CAs[0].residue.atoms).should.equal(4)
@@ -140,3 +182,14 @@ class TestPdbAtomFileReader(unittest.TestCase):
 		cd = d - c
 		(Sp2HBondParticipant.planarity_is(cd, bc, ba) - 71.2).should.be.below(
 			0.1)
+<<<<<<< HEAD
+=======
+
+	def test_should_find_hyd_interaction_bn_ILE38CG2_and_LEU42CD1(self):
+		self._atoms_Dict['72'].participant.do_I_interact_HYDly_w(
+			self._atoms_Dict['102']).should.be.ok
+
+	def test_should_find_ion_bond_bn_LYS60NZ_and_GLU338OE1(self):
+		self._atoms_Dict['232'].participant.do_I_bond_IONly_w(
+			self._atoms_Dict['3512']).should.be.ok
+>>>>>>> cad8c4abe604b6fbd52df945a85b31948079b250
