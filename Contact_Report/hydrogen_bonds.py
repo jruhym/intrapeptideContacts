@@ -189,11 +189,9 @@ class Sp3HBondParticipant(HBondParticipant):
         M = self._atom.coordinates
         P = partner.coordinates
         distance_or_is_ok = self._distance_is_ok(M, P, partner)
-        if distance_or_is_ok:
- 
-            return _distance_is_ok and\
-                can_I_bond_to_partner(self, partner) and\
-                can_I_bond_to_partner(partner, self)
+        if distance_or_is_ok and can_I_bond_to_partner(self, partner) and \
+            can_I_bond_to_partner(partner, self):
+            return distance_is_ok
 
     def can_I_bond_to_partner(self, partner):
         M = self._atom.coordinates
@@ -206,14 +204,7 @@ class Sp3HBondParticipant(HBondParticipant):
             MMtMMM = MMM - MM
             if self._planarity_is_ok(P, M, MM, MMM):
                 return True
-            MM = self._atom.residue.atoms[self._NN].coordinates
-            MtMM = MM - M
-            #MtP = P - M
-            if self._angle_is_ok(MtP, MtMM):
-                MMM = self._atom.residue.atoms[self._NNN].coordinates
-                MMtMMM = MMM - MM
-                if self._planarity_is_ok(P, M, MM, MMM):
-                    return True
+
     
     valence = property(lambda valence:'sp3')
 
