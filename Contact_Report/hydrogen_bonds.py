@@ -9,6 +9,16 @@ from collections import OrderedDict
 class PDBATOMFileReader(object):#FileReader):
     def __init__(self, file_or_path):
 
+        self._process_file(file_or_path)
+
+        for atom in self._atoms.itervalues():
+            atom.set_Residue(self._residues[atom.chainID + atom.uid])
+            atom.set_Chain(self._chains[atom.chainID])
+        for residue in self._residues.itervalues():
+            residue.set_Chain(self._chains[residue.chainID])
+            self._chains[residue.chainID].add_residue(residue)
+
+    def _process_file(self, file_or_path):
         if isinstance(file_or_path, basestring):
             f = open(file_or_path, 'r')
             print file_or_path
@@ -30,16 +40,8 @@ class PDBATOMFileReader(object):#FileReader):
                     self._residues[atom.chainID + atom.uid].add_atom(atom)
                 except KeyError:
                     self._residues[atom.chainID + atom.uid] = ResidueIQ(atom)
-                #self._chains[atom.chainID].add_residue(
-                #    self._residues[atom.chainID + atom.uid])
 
         f.close()
-        for atom in self._atoms.itervalues():
-            atom.set_Residue(self._residues[atom.chainID + atom.uid])
-            atom.set_Chain(self._chains[atom.chainID])
-        for residue in self._residues.itervalues():
-            residue.set_Chain(self._chains[residue.chainID])
-            self._chains[residue.chainID].add_residue(residue)
 
 
     def __iter__(self):
