@@ -56,8 +56,6 @@ class AtomIQ(object):
         self._resSeq = pdb_atom_line.resSeq
         self._name = pdb_atom_line.name
         self._serial = pdb_atom_line.serial
-        #self._is_donor = False
-        #self._is_acceptor = False
         self._residue = None
         self._chain = None
         self._chainID = pdb_atom_line.chainID
@@ -86,8 +84,6 @@ class AtomIQ(object):
     uid = property(lambda self: self._resSeq)
     name = property(lambda self: self._name)
     chainID = property(lambda self: self._chainID)
-    #is_donor = property(lambda self: self._is_donor)
-    #is_acceptor = property(lambda self: self._is_acceptor)
     coordinates = property(lambda self: self._coordinates)
     serial = property(lambda self: self._serial)
     residue = property(lambda self: self._residue, set_Residue)
