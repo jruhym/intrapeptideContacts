@@ -197,7 +197,7 @@ class Sp3HBondParticipant(HBondParticipant):
 
     def can_I_bond_to_partner(self, partner):
         M = self._atom.coordinates
-        P = partner.atom.coordinates
+        P = partner.coordinates
         MM = self._atom.residue.atoms[self._NN].coordinates
         MtMM = MM - M
         MtP = P - M
