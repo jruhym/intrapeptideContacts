@@ -120,6 +120,9 @@ class TestPdbAtomFileReader(unittest.TestCase):
 	def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
 		len(self._CAs[0].residue.atoms).should.equal(4)
 
+	def test_reader_should_construct_chain_and_fill_it_with_residues(self):
+		len(self._CAs[0].chain.residues).should.equal(8)
+
 	def test_Ser41OG_should_donate_to_Gly37O(self):
 		self._atoms_Dict['94'].participant.can_I_bond_to_partner(
 			self._atoms_Dict['94'].participant,
@@ -184,4 +187,6 @@ class TestPdbAtomFileReader(unittest.TestCase):
 	def test_should_find_ion_bond_bn_LYS60NZ_and_GLU338OE1(self):
 		self._atoms_Dict['232'].do_I_bond_IONly_w(
 			self._atoms_Dict['3512']).should.be.ok
+
+
 

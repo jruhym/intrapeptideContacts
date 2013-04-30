@@ -16,18 +16,31 @@ class PDBATOMFileReader(object):#FileReader):
             f = file_or_path
         self._atoms = OrderedDict()
         self._residues = OrderedDict()
+        self._chains = OrderedDict()
         for line in f:
             clean_line = line.strip()
             if clean_line.startswith('ATOM'):
                 atom = AtomIQ(clean_line)
                 self._atoms[atom.serial] = atom
-                try: 
-                    self._residues[atom.uid].add_atom(atom)
+                try:
+                    self._chains[atom.chainID].add_atom(atom)
                 except KeyError:
-                    self._residues[atom.uid] = ResidueIQ(atom)
+                    self._chains[atom.chainID] = ChainIQ(atom)
+                try: 
+                    self._residues[atom.chainID + atom.uid].add_atom(atom)
+                except KeyError:
+                    self._residues[atom.chainID + atom.uid] = ResidueIQ(atom)
+                #self._chains[atom.chainID].add_residue(
+                #    self._residues[atom.chainID + atom.uid])
+
         f.close()
         for atom in self._atoms.itervalues():
-            atom.set_Residue(self._residues[atom.uid])
+            atom.set_Residue(self._residues[atom.chainID + atom.uid])
+            atom.set_Chain(self._chains[atom.chainID])
+        for residue in self._residues.itervalues():
+            residue.set_Chain(self._chains[residue.chainID])
+            self._chains[residue.chainID].add_residue(residue)
+
 
     def __iter__(self):
         for atom in self._atoms:
@@ -43,9 +56,11 @@ class AtomIQ(object):
         self._resSeq = pdb_atom_line.resSeq
         self._name = pdb_atom_line.name
         self._serial = pdb_atom_line.serial
-        self._is_donor = False
-        self._is_acceptor = False
+        #self._is_donor = False
+        #self._is_acceptor = False
         self._residue = None
+        self._chain = None
+        self._chainID = pdb_atom_line.chainID
         self._coordinates = array([float(pdb_atom_line.x),
             float(pdb_atom_line.y),
             float(pdb_atom_line.z)
@@ -56,16 +71,27 @@ class AtomIQ(object):
     def set_Residue(self, residue):
         assert isinstance(residue, ResidueIQ)
         assert residue.uid == self._resSeq
-        self._residue = residue     
+        # if None
+        self._residue = residue  
+
+    def set_Chain(self, chain):
+        assert isinstance(chain, ChainIQ)
+        assert chain.chainID == self._chainID
+        if self._chain is None:
+            self._chain = chain
+        else:
+            raise TypeError('chain was already set and thus was not None')
 
     res_name = property(lambda self: self._res_name)
     uid = property(lambda self: self._resSeq)
     name = property(lambda self: self._name)
-    is_donor = property(lambda self: self._is_donor)
-    is_acceptor = property(lambda self: self._is_acceptor)
+    chainID = property(lambda self: self._chainID)
+    #is_donor = property(lambda self: self._is_donor)
+    #is_acceptor = property(lambda self: self._is_acceptor)
     coordinates = property(lambda self: self._coordinates)
     serial = property(lambda self: self._serial)
     residue = property(lambda self: self._residue, set_Residue)
+    chain = property(lambda self: self._chain, set_Chain)
     participant = property(lambda self: self._participant)
 
 
@@ -201,7 +227,6 @@ class Sp3HBondParticipant(HBondParticipant):
             if myself.planarity_is_ok(MtP, MtMM, MMtMMM):
                 return True
 
-
     def is_H_bond_mutual(self, partner, as_donor=True):
         assert isinstance(partner, HBondParticipant)
         distance_or_is_ok = self._distance_is_ok(partner)
@@ -210,8 +235,6 @@ class Sp3HBondParticipant(HBondParticipant):
             self.can_I_bond_to_partner(partner, self):
             return distance_is_ok
 
-
-    
     valence = property(lambda valence:'sp3')
 
 
@@ -259,11 +282,11 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
 class ResidueIQ(object):
     def __init__(self, atom):
         assert isinstance(atom, AtomIQ)
-        self._atoms = {
-            atom.name: atom
-        }
+        self._atoms = {atom.name: atom}
         self._abbr = atom.res_name
         self._uid = atom.uid
+        self._chainID = atom.chainID
+        self._chain = None
 
     def add_atom(self, atom):
         assert isinstance(atom, AtomIQ)
@@ -271,8 +294,50 @@ class ResidueIQ(object):
         if atom.name not in self._atoms:
             self._atoms[atom.name] = atom
 
+    def set_Chain(self, chain):
+        assert isinstance(chain, ChainIQ)
+        assert chain.chainID == self._chainID
+        if self._chain is None:
+            self._chain = chain
+        else:
+            raise TypeError('chain was already set and thus was not None')
+
     atoms = property(lambda self: self._atoms, add_atom)
     uid = property(lambda self: self._uid)
+    chainID = property(lambda self: self._chainID)
     abbr = property(lambda self: self._abbr)
+    chain = property(lambda self: self._chain, set_Chain)
+
+
+
+class ChainIQ(object):
+    def __init__(self, atom):
+        assert isinstance(atom, AtomIQ)
+        self._chainID = atom.chainID
+        self._atoms = OrderedDict({atom.serial: atom})
+        self._residues = OrderedDict({atom.uid: atom.residue})
+
+    def add_atom(self, atom):
+        assert isinstance(atom, AtomIQ)
+        if atom.serial not in self._atoms:
+            self._atoms[atom.serial] = atom
+        else:
+            raise KeyError('%s already exists in list of atoms for chain %s' %
+                (atom.serial, self._chainID))
+
+    def add_residue(self, residue):
+        assert isinstance(residue, ResidueIQ)
+        if residue.uid not in self._residues:
+            self._residues[residue.uid] = residue
+        #else:
+        #    raise KeyError('%s already exists in list of residues for chain %s' %
+        #        (residue.uid, self._chainID))
+
+    atoms = property(lambda self: self._atoms, add_atom)
+    residues = property(lambda self: self._residues, add_residue)
+    chainID = property(lambda self: self._chainID)
+
+
+
 
 
