@@ -155,16 +155,19 @@ class HBondParticipant(object):
     H_bond_donor_radius = property(lambda self: self._H_bond_donor_radius)
     max_num_H_acceptance = property(lambda self: self._max_num_H_acceptance)
     max_num_H_donations = property(lambda self: self._max_num_H_donations)
+    atom = property(lambda self: self._atom)
     NN = property(lambda self: self._NN)
     NNN = property(lambda self: self._NNN)
 
 
 
 class Sp3HBondParticipant(HBondParticipant):
-    def _distance_is_ok(self, M, P, partner):
+    def _distance_is_ok(self, partner):
+        M = self._atom.coordinates
+        P = partner.atom.coordinates
         distance = norm(M - P)
         if distance < self._H_bond_donor_radius + \
-            partner.participant.H_bond_acceptor_radius:
+            partner.H_bond_acceptor_radius:
             return distance
         else:
             return False
@@ -175,35 +178,40 @@ class Sp3HBondParticipant(HBondParticipant):
         assert isinstance(bc, ndarray)
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
-    def _angle_is_ok(self, MtP, MtMM):
+    def angle_is_ok(self, MtP, MtMM):
         angle = self.angle_is(MtP, MtMM)
         if angle < 180. and angle > self._angle_min:
             return True
         else:
             return False
 
-    def _planarity_is_ok(self, P, M, MM, MMM):
+    def planarity_is_ok(self, MtP, MtMM, MMtMMM):
         return True
 
-    def is_H_bond_mutual(self, partner, as_donor=True):
-        M = self._atom.coordinates
-        P = partner.coordinates
-        distance_or_is_ok = self._distance_is_ok(M, P, partner)
-        if distance_or_is_ok and can_I_bond_to_partner(self, partner) and \
-            can_I_bond_to_partner(partner, self):
-            return distance_is_ok
-
-    def can_I_bond_to_partner(self, partner):
-        M = self._atom.coordinates
-        P = partner.coordinates
-        MM = self._atom.residue.atoms[self._NN].coordinates
+    @staticmethod
+    def can_I_bond_to_partner(myself, partner):
+        assert isinstance(myself, HBondParticipant)
+        assert isinstance(partner, HBondParticipant)        
+        M = myself.atom.coordinates
+        P = partner.atom.coordinates
+        MM = myself.atom.residue.atoms[myself.NN].coordinates
         MtMM = MM - M
         MtP = P - M
-        if self._angle_is_ok(MtP, MtMM):
-            MMM = self._atom.residue.atoms[self._NNN].coordinates
+        if myself.angle_is_ok(MtP, MtMM):
+            MMM = myself.atom.residue.atoms[myself.NNN].coordinates
             MMtMMM = MMM - MM
-            if self._planarity_is_ok(P, M, MM, MMM):
+            if myself.planarity_is_ok(MtP, MtMM, MMtMMM):
                 return True
+
+
+    def is_H_bond_mutual(self, partner, as_donor=True):
+        assert isinstance(partner, HBondParticipant)
+        distance_or_is_ok = self._distance_is_ok(partner)
+        if distance_or_is_ok and \
+            self.can_I_bond_to_partner(self, partner) and \
+            self.can_I_bond_to_partner(partner, self):
+            return distance_is_ok
+
 
     
     valence = property(lambda valence:'sp3')
@@ -214,6 +222,9 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
     
     @staticmethod
     def planarity_is(ba, bc, cd):
+        assert isinstance(ba, ndarray)
+        assert isinstance(bc, ndarray)
+        assert isinstance(cd, ndarray)        
         my_plane_norm = cross(ba, bc)
         perndclr_bc_in_plane = cross(bc, my_plane_norm)
         if dot(cd, perndclr_bc_in_plane) > 0.:
@@ -224,11 +235,10 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
 
         torsion_angle = torsion_angle_center - Sp3HBondParticipant.angle_is(
             my_plane_norm, plane_norm_w_partner)
-        print torsion_angle_center
         return torsion_angle
 
 
-    def _planarity_is_ok(self, MtP, MtMM, MMtMMM):
+    def planarity_is_ok(self, MtP, MtMM, MMtMMM):
         MMtM = -MtMM
         my_plane_norm = cross(MMtMMM, MMtM)
         perndclr_MMtM_in_plane = cross(MMtM, my_plane_norm)
@@ -237,7 +247,7 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
         else: 
             torsion_angle_center = 180.
         plane_norm_w_partner = cross(MMtM, MtP)
-        torsion_angle = _angle_is(my_plane_norm, plane_norm_w_partner)
+        torsion_angle = self.angle_is(my_plane_norm, plane_norm_w_partner)
         if torsion_angle < torsion_angle_center + self._torsion_range and\
             torsion_angle > torsion_angle_center - self._torsion_range:
             return True

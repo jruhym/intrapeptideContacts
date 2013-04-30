@@ -122,11 +122,12 @@ class TestPdbAtomFileReader(unittest.TestCase):
 
 	def test_Ser41OG_should_donate_to_Gly37O(self):
 		self._atoms_Dict['94'].participant.can_I_bond_to_partner(
-			self._atoms_Dict['65']).should.be.ok
+			self._atoms_Dict['94'].participant,
+			self._atoms_Dict['65'].participant).should.be.ok
 	
 	def test_donation_between_Ser41OG_and_Gly37O_should_be_mutual(self):
 		self._atoms_Dict['94'].participant.is_H_bond_mutual(
-			self._atoms_Dict['65']).should.be.ok
+			self._atoms_Dict['65'].participant).should.be.ok
 	
 	def test_Ser41OG_should_be_a_donor(self):
 		self._atoms_Dict['94'].participant.is_donor.should.be.ok
@@ -177,10 +178,10 @@ class TestPdbAtomFileReader(unittest.TestCase):
 			0.1)
 
 	def test_should_find_hyd_interaction_bn_ILE38CG2_and_LEU42CD1(self):
-		self._atoms_Dict['72'].participant.do_I_interact_HYDly_w(
+		self._atoms_Dict['72'].do_I_interact_HYDly_w(
 			self._atoms_Dict['102']).should.be.ok
 
 	def test_should_find_ion_bond_bn_LYS60NZ_and_GLU338OE1(self):
-		self._atoms_Dict['232'].participant.do_I_bond_IONly_w(
+		self._atoms_Dict['232'].do_I_bond_IONly_w(
 			self._atoms_Dict['3512']).should.be.ok
 
