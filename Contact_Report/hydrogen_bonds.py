@@ -16,8 +16,6 @@ class PDBATOMFileReader(object):#FileReader):
             f = file_or_path
         self._atoms = OrderedDict()
         self._residues = OrderedDict()
-        #f.next()
-        f.next()
         for line in f:
             clean_line = line.strip()
             if clean_line.startswith('ATOM'):
