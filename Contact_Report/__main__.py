@@ -8,7 +8,6 @@ for currentWildcard in sys.argv[1:]:
 		reader = PDBATOMFileReader(file_path)
 		donorDict = {}
 		acceptorDict = {}
-		for atom in reader:
 		atoms = {}
 		for atom in reader:
 			atoms[atom.serial] = atom
