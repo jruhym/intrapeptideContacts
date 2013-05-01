@@ -260,14 +260,15 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM):
         MMtM = -MtMM
-        my_plane_norm = cross(MMtMMM, MMtM)
-        perndclr_MMtM_in_plane = cross(MMtM, my_plane_norm)
-        if dot(MtA, perndclr_MMtM_in_plane) > 0.:
-            torsion_angle_center = 0.
-        else: 
-            torsion_angle_center = 180.
-        plane_norm_w_partner = cross(MMtM, MtP)
-        torsion_angle = self.angle_is(my_plane_norm, plane_norm_w_partner)
+        #my_plane_norm = cross(MMtMMM, MMtM)
+        #perndclr_MMtM_in_plane = cross(MMtM, my_plane_norm)
+        #if dot(MtA, perndclr_MMtM_in_plane) > 0.:
+        #    torsion_angle_center = 0.
+        #else: 
+        #    torsion_angle_center = 180.
+        #plane_norm_w_partner = cross(MMtM, MtP)
+        #torsion_angle = self.angle_is(my_plane_norm, plane_norm_w_partner)
+        torsion_angle = self.planarity_is(MMtMMM, MMtM, MtP)
         if torsion_angle < torsion_angle_center + self._torsion_range and\
             torsion_angle > torsion_angle_center - self._torsion_range:
             return True
