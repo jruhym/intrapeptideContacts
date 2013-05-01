@@ -10,10 +10,8 @@ class PDBATOMFileReader(object):#FileReader):
     def __init__(self, file_or_path):
 
         self._process_file(file_or_path)
+        self._set_residues_and_chains_of_all_atoms()
 
-        for atom in self._atoms.itervalues():
-            atom.set_Residue(self._residues[atom.chainID + atom.uid])
-            atom.set_Chain(self._chains[atom.chainID])
         for residue in self._residues.itervalues():
             residue.set_Chain(self._chains[residue.chainID])
             self._chains[residue.chainID].add_residue(residue)
@@ -42,6 +40,12 @@ class PDBATOMFileReader(object):#FileReader):
                     self._residues[atom.chainID + atom.uid] = ResidueIQ(atom)
 
         f.close()
+
+    def _set_residues_and_chains_of_all_atoms(self):
+        for atom in self._atoms.itervalues():
+            atom.set_Residue(self._residues[atom.chainID + atom.uid])
+            atom.set_Chain(self._chains[atom.chainID])
+
 
 
     def __iter__(self):
