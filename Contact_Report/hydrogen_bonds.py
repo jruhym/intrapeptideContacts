@@ -9,7 +9,7 @@ from collections import OrderedDict
 class PDBATOMFileReader(object):#FileReader):
     def __init__(self, file_or_path):
         self._parse_atom_line_filling_atoms_residues_and_chains_dicts(file_or_path)
-        self._set_residues_and_chains_of_all_atoms()
+        self._set_residues_and_chains_of_each_atom()
         self._set_chain_of_each_residue_and_add_it_to_itsown_chain()
 
     def _parse_atom_line_filling_atoms_residues_and_chains_dicts(self, file_or_path):
@@ -36,7 +36,7 @@ class PDBATOMFileReader(object):#FileReader):
 
         f.close()
 
-    def _set_residues_and_chains_of_all_atoms(self):
+    def _set_residues_and_chains_of_each_atom(self):
         for atom in self._atoms.itervalues():
             atom.set_Residue(self._residues[atom.chainID + atom.uid])
             atom.set_Chain(self._chains[atom.chainID])
@@ -45,7 +45,6 @@ class PDBATOMFileReader(object):#FileReader):
         for residue in self._residues.itervalues():
             residue.set_Chain(self._chains[residue.chainID])
             self._chains[residue.chainID].add_residue(residue)
-
 
     def __iter__(self):
         for atom in self._atoms:
