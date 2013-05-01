@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 
 
-class PDBATOMFileReader(object):#FileReader):
+class PDBATOMFileReader(object):
     def __init__(self, file_or_path):
         self._parse_atom_line_filling_atoms_residues_and_chains_dicts(file_or_path)
         self._set_residues_and_chains_of_each_atom()
@@ -33,7 +33,6 @@ class PDBATOMFileReader(object):#FileReader):
                     self._residues[atom.chainID + atom.uid].add_atom(atom)
                 except KeyError:
                     self._residues[atom.chainID + atom.uid] = ResidueIQ(atom)
-
         f.close()
 
     def _set_residues_and_chains_of_each_atom(self):
