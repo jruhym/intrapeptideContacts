@@ -2,7 +2,7 @@ import bioinf
 from numpy import array, dot, arccos, rad2deg, ndarray, cross
 from numpy.linalg import norm
 from .constants import *
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 
 
 
@@ -96,6 +96,7 @@ class AtomIQ(object):
 
 
 class HBondParticipant(object):
+    
     def __init__(self, atom, 
         is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
         is_acceptor=False, H_bond_acceptor_radius=None, 
@@ -112,7 +113,6 @@ class HBondParticipant(object):
         # leave NN as string to index residue.atoms later.
         self._NN = NN
         self._NNN = NNN
-
     @staticmethod
     def generate_participant_by_valence(atom):
         assert isinstance(atom, AtomIQ)
@@ -182,9 +182,11 @@ class HBondParticipant(object):
     NN = property(lambda self: self._NN)
     NNN = property(lambda self: self._NNN)
 
+#angleMinimum = namedtuple('angleMinimum', ['donor', 'acceptor'])
 
 
 class Sp3HBondParticipant(HBondParticipant):
+    _angle_min = {'donor':90, 'acceptor':60}
     def _distance_is_ok(self, partner):
         M = self._atom.coordinates
         P = partner.atom.coordinates
@@ -201,9 +203,9 @@ class Sp3HBondParticipant(HBondParticipant):
         assert isinstance(bc, ndarray)
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
-    def angle_is_ok(self, MtP, MtMM):
+    def angle_is_ok(self, MtP, MtMM, donor_or_acceptor='donor'):
         angle = self.angle_is(MtP, MtMM)
-        if angle < 180. and angle > self._angle_min:
+        if angle < 180. and angle > self._angle_min[donor_or_acceptor]:
             return True
         else:
             return False
@@ -212,7 +214,7 @@ class Sp3HBondParticipant(HBondParticipant):
         return True
 
     @staticmethod
-    def can_I_bond_to_partner(myself, partner):
+    def can_I_bond_to_partner(myself, partner, donor_or_acceptor='donor'):
         assert isinstance(myself, HBondParticipant)
         assert isinstance(partner, HBondParticipant)        
         M = myself.atom.coordinates
@@ -226,12 +228,12 @@ class Sp3HBondParticipant(HBondParticipant):
             if myself.planarity_is_ok(MtP, MtMM, MMtMMM):
                 return True
 
-    def is_H_bond_mutual(self, partner, as_donor=True):
+    def is_H_bond_mutual(self, partner):
         assert isinstance(partner, HBondParticipant)
         distance_or_is_ok = self._distance_is_ok(partner)
         if distance_or_is_ok and \
             self.can_I_bond_to_partner(self, partner) and \
-            self.can_I_bond_to_partner(partner, self):
+            self.can_I_bond_to_partner(partner, self, 'acceptor'):
             return distance_is_ok
 
     valence = property(lambda valence:'sp3')
@@ -239,7 +241,7 @@ class Sp3HBondParticipant(HBondParticipant):
 
 
 class Sp2HBondParticipant(Sp3HBondParticipant):
-    
+    _angle_min = {'donor':90, 'acceptor':90}
     @staticmethod
     def planarity_is(ba, bc, cd):
         assert isinstance(ba, ndarray)
