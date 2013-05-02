@@ -132,13 +132,10 @@ class HBondParticipant(object):
         bb = namedtuple('backbone_Hbond_atom_name', ['donor','acceptor'])('N', 'O')
         is_acceptor = False
         is_donor = False
-        valence = None
         H_bond_donor_radius = None
         max_num_H_donations = None
         H_bond_acceptor_radius = None
         max_num_H_acceptance = None
-        NN = None
-        NNN = None
 
         for currentDonorGroup in list_of_hbond_donor_groups:
             if HBondParticipant._am_I_when_given(atom, currentDonorGroup, bb.donor):
