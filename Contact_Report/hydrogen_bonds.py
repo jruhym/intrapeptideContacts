@@ -191,7 +191,7 @@ class AngleMinimum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
 
 class Sp3HBondParticipant(HBondParticipant):
     _angle_min = AngleMinimum(90, 60)
-    #_angle_min = {'donor':90, 'acceptor':60}
+
     def _distance_is_ok(self, partner):
         M = self._atom.coordinates
         P = partner.atom.coordinates
@@ -208,13 +208,9 @@ class Sp3HBondParticipant(HBondParticipant):
         assert isinstance(bc, ndarray)
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
-    def angle_is_ok(self, MtP, MtMM, as_donor=True): #donor_or_acceptor='donor'):
+    def angle_is_ok(self, MtP, MtMM, as_donor=True):
         angle = self.angle_is(MtP, MtMM)
         return angle < 180. and angle > self._angle_min.is_if(as_donor)
-        #if angle < 180. and angle > self._angle_min.is_if(as_donor):
-        #    return True
-        #else:
-        #    return False
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM):
         return True
@@ -248,7 +244,7 @@ class Sp3HBondParticipant(HBondParticipant):
 
 class Sp2HBondParticipant(Sp3HBondParticipant):
     _angle_min = AngleMinimum(90, 90)
-    #_angle_min = {'donor':90, 'acceptor':90}
+
     @staticmethod
     def planarity_is(ba, bc, cd):
         assert isinstance(ba, ndarray)
@@ -330,6 +326,8 @@ class ChainIQ(object):
         assert isinstance(residue, ResidueIQ)
         if residue.uid not in self._residues:
             self._residues[residue.uid] = residue
+        # The following does not work because the first residue is added as 
+        # chain is initialized.
         #else:
         #    raise KeyError('%s already exists in list of residues for chain %s' %
         #        (residue.uid, self._chainID))
