@@ -182,11 +182,16 @@ class HBondParticipant(object):
     NN = property(lambda self: self._NN)
     NNN = property(lambda self: self._NNN)
 
-#angleMinimum = namedtuple('angleMinimum', ['donor', 'acceptor'])
+
+class AngleMinimum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
+    def is_if(self, donor=True):
+        return self.as_donor if donor else self.as_acceptor
+
 
 
 class Sp3HBondParticipant(HBondParticipant):
-    _angle_min = {'donor':90, 'acceptor':60}
+    _angle_min = AngleMinimum(90, 60)
+    #_angle_min = {'donor':90, 'acceptor':60}
     def _distance_is_ok(self, partner):
         M = self._atom.coordinates
         P = partner.atom.coordinates
@@ -203,9 +208,10 @@ class Sp3HBondParticipant(HBondParticipant):
         assert isinstance(bc, ndarray)
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
-    def angle_is_ok(self, MtP, MtMM, donor_or_acceptor='donor'):
+    def angle_is_ok(self, MtP, MtMM, as_donor=True): #donor_or_acceptor='donor'):
         angle = self.angle_is(MtP, MtMM)
-        if angle < 180. and angle > self._angle_min[donor_or_acceptor]:
+        minimum_angle = self._angle_min.is_if(as_donor)
+        if angle < 180. and angle > minimum_angle:
             return True
         else:
             return False
@@ -241,7 +247,8 @@ class Sp3HBondParticipant(HBondParticipant):
 
 
 class Sp2HBondParticipant(Sp3HBondParticipant):
-    _angle_min = {'donor':90, 'acceptor':90}
+    _angle_min = AngleMinimum(90, 90)
+    #_angle_min = {'donor':90, 'acceptor':90}
     @staticmethod
     def planarity_is(ba, bc, cd):
         assert isinstance(ba, ndarray)
