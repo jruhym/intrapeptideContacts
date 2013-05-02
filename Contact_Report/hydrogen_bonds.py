@@ -191,8 +191,14 @@ class AngleMinimum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
 
 
 
+class PlaneAngleMaximum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
+    def is_if(self, donor=True):
+        return self.as_donor if donor else self.as_acceptor
+
+
+
 class Sp3HBondParticipant(HBondParticipant):
-    _angle_min = AngleMinimum(90, 60)
+    _angle_min = AngleMinimum(90., 60.)
 
     def _distance_is_ok(self, partner):
         M = self._atom.coordinates
@@ -214,11 +220,11 @@ class Sp3HBondParticipant(HBondParticipant):
         angle = self.angle_is(MtP, MtMM)
         return angle < 180. and angle > self._angle_min.is_if(as_donor)
 
-    def planarity_is_ok(self, MtP, MtMM, MMtMMM):
+    def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
         return True
 
     @staticmethod
-    def can_I_bond_to_partner(myself, partner, donor_or_acceptor='donor'):
+    def can_I_bond_to_partner(myself, partner, as_donor=True):
         assert isinstance(myself, HBondParticipant)
         assert isinstance(partner, HBondParticipant)        
         M = myself.atom.coordinates
@@ -226,10 +232,10 @@ class Sp3HBondParticipant(HBondParticipant):
         MM = myself.atom.residue.atoms[myself.NN].coordinates
         MtMM = MM - M
         MtP = P - M
-        if myself.angle_is_ok(MtP, MtMM):
+        if myself.angle_is_ok(MtP, MtMM, as_donor):
             MMM = myself.atom.residue.atoms[myself.NNN].coordinates
             MMtMMM = MMM - MM
-            if myself.planarity_is_ok(MtP, MtMM, MMtMMM):
+            if myself.planarity_is_ok(MtP, MtMM, MMtMMM, as_donor):
                 return True
 
     def is_H_bond_mutual(self, partner):
@@ -237,15 +243,16 @@ class Sp3HBondParticipant(HBondParticipant):
         distance_or_is_ok = self._distance_is_ok(partner)
         if distance_or_is_ok and \
             self.can_I_bond_to_partner(self, partner) and \
-            self.can_I_bond_to_partner(partner, self, 'acceptor'):
-            return distance_is_ok
+            self.can_I_bond_to_partner(partner, self, as_donor=False):
+            return distance_or_is_ok
 
     valence = property(lambda valence:'sp3')
 
 
 
 class Sp2HBondParticipant(Sp3HBondParticipant):
-    _angle_min = AngleMinimum(90, 90)
+    _angle_min = AngleMinimum(90., 90.)
+    _plane_angle_max = PlaneAngleMaximum(60., 90.)
 
     @staticmethod
     def planarity_is(ba, bc, cd):
@@ -254,21 +261,16 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
         assert isinstance(cd, ndarray)        
         my_plane_norm = cross(ba, bc)
         perndclr_bc_in_plane = cross(bc, my_plane_norm)
-        if dot(cd, perndclr_bc_in_plane) > 0.:
-            torsion_angle_center = 0.
-        else: 
-            torsion_angle_center = 180.
+        torsion_angle_center = 0 if dot(cd, perndclr_bc_in_plane) > 0. else 180.
         plane_norm_w_partner = cross(-bc, cd)
 
-        plane_angle = torsion_angle_center - Sp3HBondParticipant.angle_is(
-            my_plane_norm, plane_norm_w_partner)
-        return plane_angle
+        return abs(torsion_angle_center - Sp3HBondParticipant.angle_is(
+            my_plane_norm, plane_norm_w_partner))
 
 
-    def planarity_is_ok(self, MtP, MtMM, MMtMMM):
-        MMtM = -MtMM
-        plane_angle = self.planarity_is(MMtMMM, MMtM, MtP)
-        return plane_angle < self._torsion_range and plane_angle > - self._torsion_range
+    def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
+        plane_angle = self.planarity_is(MMtMMM, -MtMM, MtP)
+        return plane_angle < self._plane_angle_max.is_if(as_donor)
 
     valence = property(lambda valence: 'sp2')
 
