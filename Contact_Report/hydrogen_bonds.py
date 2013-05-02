@@ -260,19 +260,15 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
             torsion_angle_center = 180.
         plane_norm_w_partner = cross(-bc, cd)
 
-        torsion_angle = torsion_angle_center - Sp3HBondParticipant.angle_is(
+        plane_angle = torsion_angle_center - Sp3HBondParticipant.angle_is(
             my_plane_norm, plane_norm_w_partner)
-        return torsion_angle
+        return plane_angle
 
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM):
         MMtM = -MtMM
-        torsion_angle = self.planarity_is(MMtMMM, MMtM, MtP)
-        if torsion_angle < torsion_angle_center + self._torsion_range and\
-            torsion_angle > torsion_angle_center - self._torsion_range:
-            return True
-        else:
-            return False
+        plane_angle = self.planarity_is(MMtMMM, MMtM, MtP)
+        return plane_angle < self._torsion_range and plane_angle > - self._torsion_range
 
     valence = property(lambda valence: 'sp2')
 
