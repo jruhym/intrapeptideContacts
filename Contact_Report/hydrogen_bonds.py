@@ -210,10 +210,11 @@ class Sp3HBondParticipant(HBondParticipant):
 
     def angle_is_ok(self, MtP, MtMM, as_donor=True): #donor_or_acceptor='donor'):
         angle = self.angle_is(MtP, MtMM)
-        if angle < 180. and angle > self._angle_min.is_if(as_donor):
-            return True
-        else:
-            return False
+        return angle < 180. and angle > self._angle_min.is_if(as_donor)
+        #if angle < 180. and angle > self._angle_min.is_if(as_donor):
+        #    return True
+        #else:
+        #    return False
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM):
         return True
