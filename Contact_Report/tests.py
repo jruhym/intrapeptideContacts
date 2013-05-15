@@ -7,20 +7,20 @@ from StringIO import StringIO
 
 class TestAtomIq(unittest.TestCase):
 
-	def setUp(self):
-		self._atom = AtomIQ('ATOM     94  OG  SER A  41     -52.128  11.044  10.561  1.00 82.68           O')
+    def setUp(self):
+        self._atom = AtomIQ('ATOM     94  OG  SER A  41     -52.128  11.044  10.561  1.00 82.68           O')
 
-	def test_atom_should_have_correct_serial(self):
-		(self._atom.serial).should.equal('94')
+    def test_atom_should_have_correct_serial(self):
+        (self._atom.serial).should.equal('94')
 
-	def test_atom_should_have_correct_name(self):
-		self._atom.name.should.equal('OG')
+    def test_atom_should_have_correct_name(self):
+        self._atom.name.should.equal('OG')
 
-	def test_atom_should_have_correct_res_name(self):
-		self._atom.res_name.should.equal('SER')
+    def test_atom_should_have_correct_res_name(self):
+        self._atom.res_name.should.equal('SER')
 
-	def test_atom_should_have_correct_uid(self):
-		self._atom.uid.should.equal('41')
+    def test_atom_should_have_correct_uid(self):
+        self._atom.uid.should.equal('41')
 
 pdb_contents = """
 ATOM     62  N   GLY A  37     -50.959   7.324  15.287  1.00 83.06           N  
@@ -95,98 +95,110 @@ ATOM   3513  OE2 GLU A 338     -53.176  40.048   2.131  1.00 89.12           O
 class TestPdbAtomFileReader(unittest.TestCase):
 
 
-	def setUp(self):
+    def setUp(self):
 
-		self._CAs = []
-		pdbfile = StringIO(pdb_contents)
-		reader = PDBATOMFileReader(pdbfile)
-		self._i = 0
-		self._atoms_Dict = {}
-		for atom in reader:
-			self._i += 1
-			self._atoms_Dict[atom.serial] = atom
-			if atom.name == 'CA':
-				self._CAs.append(atom)
+        self._CAs = []
+        pdbfile = StringIO(pdb_contents)
+        reader = PDBATOMFileReader(pdbfile)
+        self._i = 0
+        self._atoms_Dict = {}
+        for atom in reader:
+            self._i += 1
+            self._atoms_Dict[atom.serial] = atom
+            if atom.name == 'CA':
+                self._CAs.append(atom)
 
-	def test_reader_should_yield_correct_number_of_atoms(self):
-		self._i.should.equal(59)
-	
-	def test_reader_should_yield_correct_number_of_residues(self):
-		len(self._CAs).should.equal(5)
-	
-	def test_reader_should_yield_correct_number_of_residues(self):
-		len(self._CAs).should.equal(8)
+    def test_reader_should_yield_correct_number_of_atoms(self):
+        self._i.should.equal(59)
+    
+    def test_reader_should_yield_correct_number_of_residues(self):
+        len(self._CAs).should.equal(5)
+    
+    def test_reader_should_yield_correct_number_of_residues(self):
+        len(self._CAs).should.equal(8)
 
-	def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
-		len(self._CAs[0].residue.atoms).should.equal(4)
+    def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
+        len(self._CAs[0].residue.atoms).should.equal(4)
 
-	def test_reader_should_construct_chain_and_fill_it_with_residues(self):
-		len(self._CAs[0].chain.residues).should.equal(8)
+    def test_reader_should_construct_chain_and_fill_it_with_residues(self):
+        len(self._CAs[0].chain.residues).should.equal(8)
 
-	def test_Ser41OG_should_donate_to_Gly37O(self):
-		self._atoms_Dict['94'].participant.can_I_bond_to_partner(
-			self._atoms_Dict['94'].participant,
-			self._atoms_Dict['65'].participant).should.be.ok
-	
-	def test_donation_between_Ser41OG_and_Gly37O_should_be_mutual(self):
-		self._atoms_Dict['94'].participant.is_H_bond_mutual(
-			self._atoms_Dict['65'].participant).should.be.ok
-	
-	def test_Ser41OG_should_be_a_donor(self):
-		self._atoms_Dict['94'].participant.is_donor.should.be.ok
+    def test_Ser41OG_should_donate_to_Gly37O(self):
+        self._atoms_Dict['94'].participant.can_I_bond_to_partner(
+            self._atoms_Dict['94'].participant,
+            self._atoms_Dict['65'].participant).should.be.ok
+    
+    def test_donation_between_Ser41OG_and_Gly37O_should_be_mutual(self):
+        self._atoms_Dict['94'].participant.is_H_bond_mutual(
+            self._atoms_Dict['65'].participant).should.be.ok
+    
+    def test_Ser41OG_should_be_a_donor(self):
+        self._atoms_Dict['94'].participant.is_donor.should.be.ok
 
-	def test_Ser41OG_valence_should_be_sp3(self):
-		(self._atoms_Dict['94'].participant.valence).should.equal('sp3')
+    def test_Ser41OG_valence_should_be_sp3(self):
+        (self._atoms_Dict['94'].participant.valence).should.equal('sp3')
 
-	def test_Ser41OG_H_bond_donor_radius_should_be_correct(self):
-		self._atoms_Dict['94'].participant.H_bond_donor_radius.should.equal(
-			1.7
-			)
+    def test_Ser41OG_H_bond_donor_radius_should_be_correct(self):
+        self._atoms_Dict['94'].participant.H_bond_donor_radius.should.equal(
+            1.7
+            )
 
-	def test_Ser41OG_max_number_of_donations_should_be_correct(self):
-		self._atoms_Dict['94'].participant.max_num_H_donations.should.equal(
-			1
-			)
+    def test_Ser41OG_max_number_of_donations_should_be_correct(self):
+        self._atoms_Dict['94'].participant.max_num_H_donations.should.equal(
+            1
+            )
 
-	def test_Ser41OG_NN_should_be_CB(self):
-		self._atoms_Dict['94'].participant.NN.should.equal('CB')
+    def test_Ser41OG_NN_should_be_CB(self):
+        self._atoms_Dict['94'].participant.NN.should.equal('CB')
 
-	def test_Ser41OG_NNN_should_be_CA(self):
-		self._atoms_Dict['94'].participant.NNN.should.equal('CA')
+    def test_Ser41OG_NNN_should_be_CA(self):
+        self._atoms_Dict['94'].participant.NNN.should.equal('CA')
 
-	def test_angle_between_SerOG_its_NN_and_GlyO_should_be_correct(self):
-		OG = self._atoms_Dict['94']
-		b = OG.coordinates
-		CB = OG.residue.atoms[OG.participant.NN]
-		a = CB.coordinates
-		O = self._atoms_Dict['65']
-		c = O.coordinates
-		ba = a - b
-		bc = c - b
-		abs(Sp3HBondParticipant.angle_is(ba, bc) - 96.8).should.be.below(0.1)
+    def test_angle_between_SerOG_its_NN_and_GlyO_should_be_correct(self):
+        OG = self._atoms_Dict['94']
+        b = OG.coordinates
+        CB = OG.residue.atoms[OG.participant.NN]
+        a = CB.coordinates
+        O = self._atoms_Dict['65']
+        c = O.coordinates
+        ba = a - b
+        bc = c - b
+        abs(Sp3HBondParticipant.angle_is(ba, bc) - 96.8).should.be.below(0.1)
 
-	def test_torsion_angle_Gly37Ca_C_O_and_Ser41O_should_be_correct(self):
-		OG = self._atoms_Dict['94']
-		O = self._atoms_Dict['65']
-		C = O.residue.atoms[O.participant.NN]
-		CA = O.residue.atoms[O.participant.NNN]
-		a = CA.coordinates
-		b = C.coordinates
-		c = O.coordinates
-		d = OG.coordinates
-		ba = a - b
-		bc = c - b
-		cd = d - c
-		(Sp2HBondParticipant.planarity_is(cd, bc, ba) - 71.2).should.be.below(
-			0.1)
+    def test_torsion_angle_Gly37Ca_C_O_and_Ser41O_should_be_correct(self):
+        OG = self._atoms_Dict['94']
+        O = self._atoms_Dict['65']
+        C = O.residue.atoms[O.participant.NN]
+        CA = O.residue.atoms[O.participant.NNN]
+        a = CA.coordinates
+        b = C.coordinates
+        c = O.coordinates
+        d = OG.coordinates
+        ba = a - b
+        bc = c - b
+        cd = d - c
+        (Sp2HBondParticipant.planarity_is(cd, bc, ba) - 71.2).should.be.below(
+            0.1)
 
-	def test_should_find_hyd_interaction_bn_ILE38CG2_and_LEU42CD1(self):
-		self._atoms_Dict['72'].do_I_interact_HYDly_w(
-			self._atoms_Dict['102']).should.be.ok
+    def test_donor_should_have_correct_acceptor_in_list(self):
+        self._atoms_Dict['94'].participant.is_H_bond_mutual(self._atoms_Dict['65'].participant)
+        self._atoms_Dict['94'].participant.acceptor_list[0].atom.serial.should.equal('65')
 
-	def test_should_find_ion_bond_bn_LYS60NZ_and_GLU338OE1(self):
-		self._atoms_Dict['232'].do_I_bond_IONly_w(
-			self._atoms_Dict['3512']).should.be.ok
+
+    def test_acceptor_should_have_correct_donor_in_list(self):
+        self._atoms_Dict['94'].participant.is_H_bond_mutual(self._atoms_Dict['65'].participant)
+        self._atoms_Dict['65'].participant.donor_list[0].atom.serial.should.equal('94')
+        
+
+
+
+    def test_should_find_hyd_interaction_bn_ILE38CG2_and_LEU42CD1(self):
+        self._atoms_Dict['72'].do_I_interact_HYDly_w(
+            self._atoms_Dict['102']).should.be.ok
+
+    def test_should_find_ion_bond_bn_LYS60NZ_and_GLU338OE1(self):
+        self._atoms_Dict['232'].do_I_bond_IONly_w(
+            self._atoms_Dict['3512']).should.be.ok
 
 
 

@@ -114,6 +114,8 @@ class HBondParticipant(object):
         # leave NN as string to index residue.atoms later.
         self._NN = NN
         self._NNN = NNN
+        self._acceptor_list = []
+        self._donor_list = []
 
     @staticmethod
     def _am_I_when_given(atom, currentGroup, bb_atom_name):
@@ -244,9 +246,19 @@ class Sp3HBondParticipant(HBondParticipant):
         if distance_or_is_ok and \
             self.can_I_bond_to_partner(self, partner) and \
             self.can_I_bond_to_partner(partner, self, as_donor=False):
+            partner.append_donor_list(self)
+            self.append_acceptor_list(partner)
             return distance_or_is_ok
+    
+    def append_donor_list(self, potential_h_donor):
+        self.donor_list.append(potential_h_donor)
+
+    def append_acceptor_list(self, potential_h_acceptor):
+        self.acceptor_list.append(potential_h_acceptor)
 
     valence = property(lambda valence:'sp3')
+    acceptor_list = property(lambda self: self._acceptor_list, append_acceptor_list)
+    donor_list = property(lambda self: self._donor_list, append_donor_list)
 
 
 
