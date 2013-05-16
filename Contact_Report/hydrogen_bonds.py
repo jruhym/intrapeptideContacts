@@ -174,6 +174,12 @@ class HBondParticipant(object):
         else:
             return None
 
+    def has_excessive_donors(self):
+        return len(self._donor_list) > self._max_num_H_donations
+
+    def has_excessive_acceptors(self):
+        return len(self._acceptor_list) > self._max_num_H_donations
+
     is_acceptor = property(lambda self: self._is_acceptor)
     is_donor = property(lambda self: self._is_donor)
     H_bond_acceptor_radius = property(
