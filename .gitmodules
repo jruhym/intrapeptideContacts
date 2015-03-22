@@ -1,0 +1,3 @@
+[submodule "bioinf"]
+	path = bioinf
+	url = git@github.com:jruhym/bioinf.git
