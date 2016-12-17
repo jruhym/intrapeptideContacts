@@ -28,18 +28,6 @@ if [ "Darwin" == `uname` ]; then
     fi
 
     if [ ! -d env ]; then
-        echo "Creating your virtualenv environment"
-        PYTHON="$(which pypy)"
-        if [ "$PYTHON" == "" ]; then
-            PYTHON="$(which python)"
-        fi
-        # VERSION="$($PYTHON --version 2>&1 1>/dev/null)"
-        # if [[ "$VERSION" != "Python 2"* ]]; then
-            
-        #     echo "Use python version 2"
-        #     exit 1
-        # fi
-        # hash -r python
         virtualenv --clear --verbose --prompt "[$PROJECT] " -p python2.7 env
     fi
 fi
