@@ -6,11 +6,11 @@ from collections import OrderedDict, namedtuple
 
 class PDBATOMFileReader(object):
     def __init__(self, file_or_path):
-        self._parse_atom_lines_filling_atoms_residues_and_chains_dicts(file_or_path)
+        self._parse_atom_lines(file_or_path)
         self._set_residues_and_chains_of_each_atom()
         self._set_chain_of_each_residue_and_add_it_to_itsown_chain()
 
-    def _parse_atom_lines_filling_atoms_residues_and_chains_dicts(self, file_or_path):
+    def _parse_atom_lines(self, file_or_path):
         if isinstance(file_or_path, basestring):
             f = open(file_or_path, 'r')
         else:  
