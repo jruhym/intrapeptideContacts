@@ -235,12 +235,12 @@ class Sp3HBondParticipant(HBondParticipant):
         M = myself.atom.coordinates
         P = partner.atom.coordinates
         MM = myself.atom.residue.atoms[myself.NN].coordinates
-        MtMM = MM - M
-        MtP = P - M
-        if myself.angle_is_ok(MtP, MtMM, as_donor):
+        MtoMM = MM - M
+        MtoP = P - M
+        if myself.angle_is_ok(MtoP, MtoMM, as_donor):
             MMM = myself.atom.residue.atoms[myself.NNN].coordinates
-            MMtMMM = MMM - MM
-            if myself.planarity_is_ok(MtP, MtMM, MMtMMM, as_donor):
+            MMtoMMM = MMM - MM
+            if myself.planarity_is_ok(MtoP, MtoMM, MMtoMMM, as_donor):
                 return True
 
     def is_H_bond_mutual(self, partner):
