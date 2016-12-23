@@ -349,7 +349,3 @@ class ChainIQ(object):
     residues = property(lambda self: self._residues, add_residue)
     chainID = property(lambda self: self._chainID)
 
-
-
-
-
