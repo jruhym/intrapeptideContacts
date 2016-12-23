@@ -17,8 +17,5 @@ for currentWildcard in sys.argv[1:]:
 				if atom.participant.is_acceptor:
 					acceptorDict[atom.serial] = atom
 for donor in donorDict.itervalues():
-	for acceptor in acceptorDict.intervalues():
-		
-
-
-		
+	for acceptor in acceptorDict.itervalues():
+        
