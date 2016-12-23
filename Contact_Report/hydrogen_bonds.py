@@ -344,11 +344,6 @@ class ChainIQ(object):
         assert isinstance(residue, ResidueIQ)
         if residue.uid not in self._residues:
             self._residues[residue.uid] = residue
-        # The following does not work because the first residue is added as 
-        # chain is initialized.
-        #else:
-        #    raise KeyError('%s already exists in list of residues for chain %s' %
-        #        (residue.uid, self._chainID))
 
     atoms = property(lambda self: self._atoms, add_atom)
     residues = property(lambda self: self._residues, add_residue)
