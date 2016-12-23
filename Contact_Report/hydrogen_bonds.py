@@ -1,7 +1,7 @@
 import bioinf
 from numpy import array, dot, arccos, rad2deg, ndarray, cross
 from numpy.linalg import norm
-from .constants import *
+from constants import *
 from collections import OrderedDict, namedtuple
 
 
