@@ -229,7 +229,7 @@ class Sp3HBondParticipant(HBondParticipant):
         return True
 
     @staticmethod
-    def can_I_bond_to_partner(myself, partner, as_donor=True):
+    def can_bond_to_partner(myself, partner, as_donor=True):
         assert isinstance(myself, HBondParticipant)
         assert isinstance(partner, HBondParticipant)        
         M = myself.atom.coordinates
@@ -247,8 +247,8 @@ class Sp3HBondParticipant(HBondParticipant):
         assert isinstance(partner, HBondParticipant)
         distance_or_is_ok = self._distance_is_ok(partner)
         if distance_or_is_ok and \
-            self.can_I_bond_to_partner(self, partner) and \
-            self.can_I_bond_to_partner(partner, self, as_donor=False):
+            self.can_bond_to_partner(self, partner) and \
+            self.can_bond_to_partner(partner, self, as_donor=False):
             partner.append_donor_list(self)
             self.append_acceptor_list(partner)
             return distance_or_is_ok
