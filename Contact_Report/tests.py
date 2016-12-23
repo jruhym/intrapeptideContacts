@@ -125,7 +125,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
         len(self._CAs[0].chain.residues).should.equal(8)
 
     def test_Ser41OG_should_donate_to_Gly37O(self):
-        self._atoms_Dict['94'].participant.can_I_bond_to_partner(
+        self._atoms_Dict['94'].participant.can_bond_to_partner(
             self._atoms_Dict['94'].participant,
             self._atoms_Dict['65'].participant).should.be.ok
     
@@ -174,7 +174,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
         ba = a - b
         bc = c - b
         cd = d - c
-        (Sp2HBondParticipant.planarity_is(cd, bc, ba) - 71.2).should.be.below(
+        (Sp2HBondParticipant.planarity(cd, bc, ba) - 71.2).should.be.below(
             0.1)
 
     def test_donor_should_have_correct_acceptor_in_list(self):

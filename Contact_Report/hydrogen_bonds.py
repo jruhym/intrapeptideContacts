@@ -196,7 +196,8 @@ class AngleMinimum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
 
 
 
-class PlaneAngleMaximum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
+class PlaneAngleMaximum(
+        namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
     def is_if(self, donor=True):
         return self.as_donor if donor else self.as_acceptor
 
@@ -270,7 +271,7 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
     _plane_angle_max = PlaneAngleMaximum(60., 90.)
 
     @staticmethod
-    def planarity_is(ba, bc, cd):
+    def planarity(ba, bc, cd):
         assert isinstance(ba, ndarray)
         assert isinstance(bc, ndarray)
         assert isinstance(cd, ndarray)        
@@ -284,7 +285,7 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
 
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
-        plane_angle = self.planarity_is(MMtMMM, -MtMM, MtP)
+        plane_angle = self.planarity(MMtMMM, -MtMM, MtP)
         return plane_angle < self._plane_angle_max.is_if(as_donor)
 
     valence = property(lambda valence: 'sp2')
