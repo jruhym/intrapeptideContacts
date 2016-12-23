@@ -118,10 +118,12 @@ class HBondParticipant(object):
         assert isinstance(currentGroup, HBondGroup)
         assert backbone_atom_name in ('N', 'O')
         return (
-            atom.name in currentGroup.atoms_str_tupl and atom.res_name == currentGroup.residue.upper()
-            ) or (
-            atom.name == backbone_atom_name and currentGroup.residue == 'Peptide'
-            )
+            atom.name in currentGroup.atoms_str_tupl and \
+            atom.res_name == currentGroup.residue.upper()
+        ) or (
+            atom.name == backbone_atom_name and \
+            currentGroup.residue == 'Peptide'
+        )
 
     @staticmethod
     def generate_participant_by_valence(atom):
