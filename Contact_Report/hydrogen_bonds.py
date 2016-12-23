@@ -113,7 +113,7 @@ class HBondParticipant(object):
         self._donor_list = []
 
     @staticmethod
-    def _am_I_when_given(atom, currentGroup, backbone_atom_name):
+    def _atom_in_group_is_Hbond_participant(atom, currentGroup, backbone_atom_name):
         assert isinstance(atom, AtomIQ)
         assert isinstance(currentGroup, HBondGroup)
         assert backbone_atom_name in ('N', 'O')
@@ -128,7 +128,8 @@ class HBondParticipant(object):
     @staticmethod
     def generate_participant_by_valence(atom):
         assert isinstance(atom, AtomIQ)
-        backbone = namedtuple('backbone_Hbond_atom_name', ['donor','acceptor'])('N', 'O')
+        backbone = namedtuple('backbone_Hbond_atom_name', 
+                              ['donor','acceptor'])('N', 'O')
         is_acceptor = False
         is_donor = False
         H_bond_donor_radius = None
@@ -137,7 +138,8 @@ class HBondParticipant(object):
         max_num_H_acceptance = None
 
         for currentDonorGroup in hbond_donor_groups:
-            if HBondParticipant._am_I_when_given(atom, currentDonorGroup, backbone.donor):
+            if HBondParticipant._atom_in_group_is_Hbond_participant(
+                    atom, currentDonorGroup, backbone.donor):
                 is_donor = True
                 valence = currentDonorGroup.valence
                 H_bond_donor_radius = currentDonorGroup.H_bond_radius
@@ -146,7 +148,8 @@ class HBondParticipant(object):
                 NNN = currentDonorGroup.NNN
 
         for currentAcceptorGroup in hbond_acceptor_groups:
-            if HBondParticipant._am_I_when_given(atom, currentAcceptorGroup, backbone.acceptor):
+            if HBondParticipant._atom_in_group_is_Hbond_participant(
+                    atom, currentAcceptorGroup, backbone.acceptor):
                 is_acceptor = True
                 valence = currentAcceptorGroup.valence
                 H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
