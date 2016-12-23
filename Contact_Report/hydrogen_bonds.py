@@ -71,7 +71,6 @@ class AtomIQ(object):
     def set_Residue(self, residue):
         assert isinstance(residue, ResidueIQ)
         assert residue.uid == self._resSeq
-        # if None
         self._residue = residue  
 
     def set_Chain(self, chain):
@@ -108,8 +107,6 @@ class HBondParticipant(object):
         self._H_bond_donor_radius = H_bond_donor_radius
         self._max_num_H_acceptance = max_num_H_acceptance
         self._max_num_H_donations = max_num_H_donations
-        # tried to set NN as atoms but residue not yet set by this point so 
-        # leave NN as string to index residue.atoms later.
         self._NN = NN
         self._NNN = NNN
         self._acceptor_list = []
