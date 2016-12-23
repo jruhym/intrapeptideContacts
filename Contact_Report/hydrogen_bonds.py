@@ -4,8 +4,6 @@ from numpy.linalg import norm
 from constants import *
 from collections import OrderedDict, namedtuple
 
-
-
 class PDBATOMFileReader(object):
     def __init__(self, file_or_path):
         self._parse_atom_lines_filling_atoms_residues_and_chains_dicts(file_or_path)
@@ -66,7 +64,7 @@ class AtomIQ(object):
             float(pdb_atom_line.x),
             float(pdb_atom_line.y),
             float(pdb_atom_line.z)
-            ])
+        ])
         self._participant = \
             HBondParticipant.generate_participant_by_valence(self)
 
