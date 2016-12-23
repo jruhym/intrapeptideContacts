@@ -136,7 +136,7 @@ class HBondParticipant(object):
         H_bond_acceptor_radius = None
         max_num_H_acceptance = None
 
-        for currentDonorGroup in list_of_hbond_donor_groups:
+        for currentDonorGroup in hbond_donor_groups:
             if HBondParticipant._am_I_when_given(atom, currentDonorGroup, backbone.donor):
                 is_donor = True
                 valence = currentDonorGroup.valence
@@ -145,7 +145,7 @@ class HBondParticipant(object):
                 NN = currentDonorGroup.NN
                 NNN = currentDonorGroup.NNN
 
-        for currentAcceptorGroup in list_of_hbond_acceptor_groups:
+        for currentAcceptorGroup in hbond_acceptor_groups:
             if HBondParticipant._am_I_when_given(atom, currentAcceptorGroup, backbone.acceptor):
                 is_acceptor = True
                 valence = currentAcceptorGroup.valence
