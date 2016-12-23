@@ -96,9 +96,9 @@ class AtomIQ(object):
 class HBondParticipant(object):
     
     def __init__(self, atom, 
-        is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
-        is_acceptor=False, H_bond_acceptor_radius=None, 
-        max_num_H_acceptance=None, NN=None, NNN=None):
+            is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
+            is_acceptor=False, H_bond_acceptor_radius=None, 
+            max_num_H_acceptance=None, NN=None, NNN=None):
         assert isinstance(atom, AtomIQ)
         self._atom = atom
         self._is_acceptor = is_acceptor
