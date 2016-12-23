@@ -5,6 +5,7 @@ This is a work in progress.
 For the definition of a hydrogen bond, the algorithm of Stickle et al. J Mol Biol. 1992 Aug 20;226(4):1143-59 is used.
 
 ## Requirements
+Python2.7
 >git submodule update --init
 
 ## Usage
