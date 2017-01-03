@@ -350,3 +350,22 @@ class ChainIQ(object):
     residues = property(lambda self: self._residues, add_residue)
     chainID = property(lambda self: self._chainID)
 
+
+
+class ProteinIQ(object):
+    def generate_protein_from_PDB_ATOM_File_Reader(pdb):
+        assert isinstance(pdb, PDBATOMFileReader)
+        donorDict = {}
+        acceptorDict = {}
+        atoms = {}
+        for atom in reader:
+            atoms[atom.serial] = atom
+            if atom.participant:
+                if atom.participant.is_donor:
+                    donorDict[atom.serial] = atom
+                if atom.participant.is_acceptor:
+                    acceptorDict[atom.serial] = atom
+        for donor in donorDict.itervalues():
+            for acceptor in acceptorDict.itervalues():
+                pass
+            pass
