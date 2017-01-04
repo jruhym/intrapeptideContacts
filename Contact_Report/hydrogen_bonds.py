@@ -248,7 +248,7 @@ class Sp3HBondParticipant(HBondParticipant):
             if myself.planarity_is_ok(MtoP, MtoMM, MMtoMMM, as_donor):
                 return True
 
-    def is_H_bond_mutual(self, partner):
+    def H_bond_is_mutual(self, partner):
         assert isinstance(partner, HBondParticipant)
         distance_or_is_ok = self._distance_is_ok(partner)
         if distance_or_is_ok and \

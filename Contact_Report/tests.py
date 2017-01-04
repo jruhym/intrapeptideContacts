@@ -130,7 +130,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
             self._atoms_Dict['65'].participant).should.be.ok
     
     def test_donation_between_Ser41OG_and_Gly37O_should_be_mutual(self):
-        self._atoms_Dict['94'].participant.is_H_bond_mutual(
+        self._atoms_Dict['94'].participant.H_bond_is_mutual(
             self._atoms_Dict['65'].participant).should.be.ok
     
     def test_Ser41OG_should_be_a_donor(self):
@@ -178,11 +178,11 @@ class TestPdbAtomFileReader(unittest.TestCase):
             0.1)
 
     def test_donor_should_have_correct_acceptor_in_list(self):
-        self._atoms_Dict['94'].participant.is_H_bond_mutual(self._atoms_Dict['65'].participant)
+        self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant)
         self._atoms_Dict['94'].participant.acceptor_list[0].atom.serial.should.equal('65')
 
     def test_acceptor_should_have_correct_donor_in_list(self):
-        self._atoms_Dict['94'].participant.is_H_bond_mutual(self._atoms_Dict['65'].participant)
+        self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant)
         self._atoms_Dict['65'].participant.donor_list[0].atom.serial.should.equal('94')
         
     def test_donor_has_too_many_h_bonds(self):
@@ -195,7 +195,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
                     key_j = keys[j]
                     atom_j = self._atoms_Dict[key_j]
                     if atom_j.participant and atom_j.participant.is_acceptor:
-                       atom_i.participant.is_H_bond_mutual(atom_j.participant)       
+                       atom_i.participant.H_bond_is_mutual(atom_j.participant)       
                 atom_i.participant.has_excessive_acceptors().shouldnt.be.ok
             
     def test_acceptor_has_too_many_h_bonds(self):
@@ -208,7 +208,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
                     key_j = keys[j]
                     atom_j = self._atoms_Dict[key_j]
                     if atom_j.participant and atom_j.participant.is_acceptor:
-                        atom_i.participant.is_H_bond_mutual(atom_j.participant)       
+                        atom_i.participant.H_bond_is_mutual(atom_j.participant)       
                 if atom_i.participant.is_acceptor:
                     atom_i.participant.has_excessive_donors().shouldnt.be.ok
 
