@@ -165,14 +165,14 @@ class HBondParticipant(object):
                     is_donor, H_bond_donor_radius, max_num_H_donations,
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
                     NN, NNN
-                    )
+                )
  
             elif valence == 'sp3':
                 return Sp3HBondParticipant(atom,
                     is_donor, H_bond_donor_radius, max_num_H_donations,
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
                     NN, NNN
-                    )
+                )
         else:
             return None
 
@@ -215,8 +215,7 @@ class Sp3HBondParticipant(HBondParticipant):
         M = self._atom.coordinates
         P = partner.atom.coordinates
         distance = norm(M - P)
-        if distance < self._H_bond_donor_radius + \
-            partner.H_bond_acceptor_radius:
+        if distance < self._H_bond_donor_radius + partner.H_bond_acceptor_radius:
             return distance
         else:
             return False
