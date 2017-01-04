@@ -111,6 +111,8 @@ class HBondParticipant(object):
         self._NNN = NNN
         self._acceptor_list = []
         self._donor_list = []
+        self._backup_donors = []
+        self._backup_acceptors = []
 
     @staticmethod
     def _atom_in_group_is_Hbond_participant(atom, currentGroup, backbone_atom_name):
