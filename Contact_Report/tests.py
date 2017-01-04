@@ -178,11 +178,11 @@ class TestPdbAtomFileReader(unittest.TestCase):
             0.1)
 
     def test_donor_should_have_correct_acceptor_in_list(self):
-        self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant)
+        self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant).should.be.ok
         self._atoms_Dict['94'].participant.acceptor_list[0].atom.serial.should.equal('65')
 
     def test_acceptor_should_have_correct_donor_in_list(self):
-        self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant)
+        self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant).should.be.ok
         self._atoms_Dict['65'].participant.donor_list[0].atom.serial.should.equal('94')
         
     def test_donor_has_too_many_h_bonds(self):
