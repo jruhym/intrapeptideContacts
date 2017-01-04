@@ -113,9 +113,6 @@ class TestPdbAtomFileReader(unittest.TestCase):
         self._i.should.equal(59)
     
     def test_reader_should_yield_correct_number_of_residues(self):
-        len(self._CAs).should.equal(5)
-    
-    def test_reader_should_yield_correct_number_of_residues(self):
         len(self._CAs).should.equal(8)
 
     def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
