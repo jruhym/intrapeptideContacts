@@ -221,13 +221,13 @@ class Sp3HBondParticipant(HBondParticipant):
             return False
 
     @staticmethod        
-    def angle_is(ba, bc):
+    def angle(ba, bc):
         assert isinstance(ba, ndarray)
         assert isinstance(bc, ndarray)
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
     def angle_is_ok(self, MtP, MtMM, as_donor=True):
-        angle = self.angle_is(MtP, MtMM)
+        angle = self.angle(MtP, MtMM)
         return angle < 180. and angle > self._angle_min.is_if(as_donor)
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
@@ -284,9 +284,8 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
         torsion_angle_center = 0 if dot(cd, perndclr_bc_in_plane) > 0. else 180.
         plane_norm_w_partner = cross(-bc, cd)
 
-        return abs(torsion_angle_center - Sp3HBondParticipant.angle_is(
+        return abs(torsion_angle_center - Sp3HBondParticipant.angle(
             my_plane_norm, plane_norm_w_partner))
-
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
         plane_angle = self.planarity(MMtMMM, -MtMM, MtP)

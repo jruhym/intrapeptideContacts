@@ -160,7 +160,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
         c = O.coordinates
         ba = a - b
         bc = c - b
-        abs(Sp3HBondParticipant.angle_is(ba, bc) - 96.8).should.be.below(0.1)
+        abs(Sp3HBondParticipant.angle(ba, bc) - 96.8).should.be.below(0.1)
 
     def test_torsion_angle_Gly37Ca_C_O_and_Ser41O_should_be_correct(self):
         OG = self._atoms_Dict['94']
