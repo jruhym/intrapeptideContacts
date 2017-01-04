@@ -196,14 +196,14 @@ class HBondParticipant(object):
 
 
 class AngleMinimum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
-    def is_if(self, donor=True):
+    def angle_as_donor(self, donor=True):
         return self.as_donor if donor else self.as_acceptor
 
 
 
 class PlaneAngleMaximum(
         namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
-    def is_if(self, donor=True):
+    def angle_as_donor(self, donor=True):
         return self.as_donor if donor else self.as_acceptor
 
 
@@ -228,7 +228,7 @@ class Sp3HBondParticipant(HBondParticipant):
 
     def angle_is_ok(self, MtP, MtMM, as_donor=True):
         angle = self.angle(MtP, MtMM)
-        return angle < 180. and angle > self._angle_min.is_if(as_donor)
+        return angle < 180. and angle > self._angle_min.angle_as_donor(as_donor)
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
         return True
@@ -289,7 +289,7 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
         plane_angle = self.planarity(MMtMMM, -MtMM, MtP)
-        return plane_angle < self._plane_angle_max.is_if(as_donor)
+        return plane_angle < self._plane_angle_max.angle_as_donor(as_donor)
 
     valence = property(lambda valence: 'sp2')
 
