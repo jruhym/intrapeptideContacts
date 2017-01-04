@@ -174,8 +174,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
         ba = a - b
         bc = c - b
         cd = d - c
-        (Sp2HBondParticipant.planarity(cd, bc, ba) - 71.2).should.be.below(
-            0.1)
+        (Sp2HBondParticipant.planarity(cd, bc, ba) - 71.2).should.be.below(0.1)
 
     def test_donor_should_have_correct_acceptor_in_list(self):
         self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant).should.be.ok
