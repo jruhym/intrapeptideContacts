@@ -113,9 +113,6 @@ class TestPdbAtomFileReader(unittest.TestCase):
         self._i.should.equal(59)
     
     def test_reader_should_yield_correct_number_of_residues(self):
-        len(self._CAs).should.equal(5)
-    
-    def test_reader_should_yield_correct_number_of_residues(self):
         len(self._CAs).should.equal(8)
 
     def test_reader_should_construct_residues_and_fill_them_with_atoms(self):
@@ -125,12 +122,12 @@ class TestPdbAtomFileReader(unittest.TestCase):
         len(self._CAs[0].chain.residues).should.equal(8)
 
     def test_Ser41OG_should_donate_to_Gly37O(self):
-        self._atoms_Dict['94'].participant.can_I_bond_to_partner(
+        self._atoms_Dict['94'].participant.can_bond_to_partner(
             self._atoms_Dict['94'].participant,
             self._atoms_Dict['65'].participant).should.be.ok
     
     def test_donation_between_Ser41OG_and_Gly37O_should_be_mutual(self):
-        self._atoms_Dict['94'].participant.is_H_bond_mutual(
+        self._atoms_Dict['94'].participant.H_bond_is_mutual(
             self._atoms_Dict['65'].participant).should.be.ok
     
     def test_Ser41OG_should_be_a_donor(self):
@@ -160,7 +157,7 @@ class TestPdbAtomFileReader(unittest.TestCase):
         c = O.coordinates
         ba = a - b
         bc = c - b
-        abs(Sp3HBondParticipant.angle_is(ba, bc) - 96.8).should.be.below(0.1)
+        abs(Sp3HBondParticipant.angle(ba, bc) - 96.8).should.be.below(0.1)
 
     def test_torsion_angle_Gly37Ca_C_O_and_Ser41O_should_be_correct(self):
         OG = self._atoms_Dict['94']
@@ -174,44 +171,52 @@ class TestPdbAtomFileReader(unittest.TestCase):
         ba = a - b
         bc = c - b
         cd = d - c
-        (Sp2HBondParticipant.planarity_is(cd, bc, ba) - 71.2).should.be.below(
-            0.1)
+        (Sp2HBondParticipant.planarity(cd, bc, ba) - 71.2).should.be.below(0.1)
 
     def test_donor_should_have_correct_acceptor_in_list(self):
-        self._atoms_Dict['94'].participant.is_H_bond_mutual(self._atoms_Dict['65'].participant)
+        self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant).should.be.ok
         self._atoms_Dict['94'].participant.acceptor_list[0].atom.serial.should.equal('65')
 
     def test_acceptor_should_have_correct_donor_in_list(self):
-        self._atoms_Dict['94'].participant.is_H_bond_mutual(self._atoms_Dict['65'].participant)
+        self._atoms_Dict['94'].participant.H_bond_is_mutual(self._atoms_Dict['65'].participant).should.be.ok
         self._atoms_Dict['65'].participant.donor_list[0].atom.serial.should.equal('94')
         
-    def test_donor_has_too_many_h_bonds(self):
-        keys = self._atoms_Dict.keys()
-        N = len(keys)
-        for i, key_i in enumerate(keys):
-            atom_i = self._atoms_Dict[key_i]
-            if atom_i.participant and atom_i.participant.is_donor:
-                for j in range(i, N - 1):
-                    key_j = keys[j]
-                    atom_j = self._atoms_Dict[key_j]
-                    if atom_j.participant and atom_j.participant.is_acceptor:
-                       atom_i.participant.is_H_bond_mutual(atom_j.participant)       
-                atom_i.participant.has_excessive_acceptors().shouldnt.be.ok
+    def test_donor_does_not_have_too_many_h_bonds(self):
+        atoms = self._atoms_Dict
+        acceptors = {}
+        donors = {}
+        for key in atoms:
+            atom = self._atoms_Dict[key]
+            if atom.participant:
+                if atom.participant.is_donor: 
+                    donors[key] = atom
+                if atom.participant.is_acceptor:
+                    acceptors[key] = atom
+        for donor_key in donors:
+            donor = donors[donor_key]
+            for acceptor_key in acceptors:
+                acceptor = acceptors[acceptor_key]
+                donor.participant.H_bond_is_mutual(acceptor.participant)
+            donor.participant.has_excessive_acceptors().shouldnt.be.ok
             
-    def test_acceptor_has_too_many_h_bonds(self):
-        keys = self._atoms_Dict.keys()
-        N = len(keys)
-        for i, key_i in enumerate(keys):
-            atom_i = self._atoms_Dict[key_i]
-            if atom_i.participant and atom_i.participant.is_donor:
-                for j in range(i, N - 1):
-                    key_j = keys[j]
-                    atom_j = self._atoms_Dict[key_j]
-                    if atom_j.participant and atom_j.participant.is_acceptor:
-                        atom_i.participant.is_H_bond_mutual(atom_j.participant)       
-                if atom_i.participant.is_acceptor:
-                    atom_i.participant.has_excessive_donors().shouldnt.be.ok
-
+    def test_acceptor_does_not_have_too_many_h_bonds(self):
+        atoms = self._atoms_Dict
+        acceptors = {}
+        donors = {}
+        for key in atoms:
+            atom = self._atoms_Dict[key]
+            if atom.participant:
+                if atom.participant.is_donor: 
+                    donors[key] = atom
+                if atom.participant.is_acceptor:
+                    acceptors[key] = atom
+        for donor_key in donors:
+            donor = donors[donor_key]
+            for acceptor_key in acceptors:
+                acceptor = acceptors[acceptor_key]
+                donor.participant.H_bond_is_mutual(acceptor.participant)
+            if donor.participant.is_acceptor:
+                donor.participant.has_excessive_acceptors().shouldnt.be.ok
 
     def test_should_find_hyd_interaction_bn_ILE38CG2_and_LEU42CD1(self):
         self._atoms_Dict['72'].do_I_interact_HYDly_w(

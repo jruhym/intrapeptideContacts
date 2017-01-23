@@ -295,7 +295,7 @@ acceptor_Ssp3_II_Cys = HBondGroup(
 	NNN = "CA"
 )
 
-list_of_hbond_donor_groups = (
+hbond_donor_groups = (
 	donor_Nsp2_I_Peptide,
 	donor_Nsp2_I_Trp,
 	donor_Nsp2_II_Asn,
@@ -309,7 +309,7 @@ list_of_hbond_donor_groups = (
 	donor_Osp2_I_Tyr
 )
 
-list_of_hbond_acceptor_groups = (
+hbond_acceptor_groups = (
 	acceptor_Nsp2_I_His_ND1,
 	acceptor_Nsp2_I_His_NE2,
 	acceptor_Osp3_I_Ser,

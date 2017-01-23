@@ -61,6 +61,6 @@ case $1 in
     ;;
 
     * )
-        echo "Run something!"
+        python2.7 Contact_Report $1
     ;;
 esac

@@ -1,18 +1,16 @@
 import bioinf
 from numpy import array, dot, arccos, rad2deg, ndarray, cross
 from numpy.linalg import norm
-from .constants import *
+from constants import *
 from collections import OrderedDict, namedtuple
-
-
 
 class PDBATOMFileReader(object):
     def __init__(self, file_or_path):
-        self._parse_atom_lines_filling_atoms_residues_and_chains_dicts(file_or_path)
+        self._parse_atom_lines(file_or_path)
         self._set_residues_and_chains_of_each_atom()
         self._set_chain_of_each_residue_and_add_it_to_itsown_chain()
 
-    def _parse_atom_lines_filling_atoms_residues_and_chains_dicts(self, file_or_path):
+    def _parse_atom_lines(self, file_or_path):
         if isinstance(file_or_path, basestring):
             f = open(file_or_path, 'r')
         else:  
@@ -66,14 +64,13 @@ class AtomIQ(object):
             float(pdb_atom_line.x),
             float(pdb_atom_line.y),
             float(pdb_atom_line.z)
-            ])
+        ])
         self._participant = \
             HBondParticipant.generate_participant_by_valence(self)
 
     def set_Residue(self, residue):
         assert isinstance(residue, ResidueIQ)
         assert residue.uid == self._resSeq
-        # if None
         self._residue = residue  
 
     def set_Chain(self, chain):
@@ -99,9 +96,9 @@ class AtomIQ(object):
 class HBondParticipant(object):
     
     def __init__(self, atom, 
-        is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
-        is_acceptor=False, H_bond_acceptor_radius=None, 
-        max_num_H_acceptance=None, NN=None, NNN=None):
+            is_donor=False, H_bond_donor_radius=None, max_num_H_donations=None,
+            is_acceptor=False, H_bond_acceptor_radius=None, 
+            max_num_H_acceptance=None, NN=None, NNN=None):
         assert isinstance(atom, AtomIQ)
         self._atom = atom
         self._is_acceptor = is_acceptor
@@ -110,28 +107,31 @@ class HBondParticipant(object):
         self._H_bond_donor_radius = H_bond_donor_radius
         self._max_num_H_acceptance = max_num_H_acceptance
         self._max_num_H_donations = max_num_H_donations
-        # tried to set NN as atoms but residue not yet set by this point so 
-        # leave NN as string to index residue.atoms later.
         self._NN = NN
         self._NNN = NNN
         self._acceptor_list = []
         self._donor_list = []
+        self._backup_donors = []
+        self._backup_acceptors = []
 
     @staticmethod
-    def _am_I_when_given(atom, currentGroup, bb_atom_name):
+    def _atom_in_group_is_Hbond_participant(atom, currentGroup, backbone_atom_name):
         assert isinstance(atom, AtomIQ)
         assert isinstance(currentGroup, HBondGroup)
-        assert bb_atom_name in ('N', 'O')
+        assert backbone_atom_name in ('N', 'O')
         return (
-            atom.name in currentGroup.atoms_str_tupl and atom.res_name == currentGroup.residue.upper()
-            ) or (
-            atom.name == bb_atom_name and currentGroup.residue == 'Peptide'
-            )
+            (atom.name in currentGroup.atoms_str_tupl and 
+             atom.res_name == currentGroup.residue.upper()) 
+            or 
+            (atom.name == backbone_atom_name and 
+             currentGroup.residue == 'Peptide')
+        )
 
     @staticmethod
     def generate_participant_by_valence(atom):
         assert isinstance(atom, AtomIQ)
-        bb = namedtuple('backbone_Hbond_atom_name', ['donor','acceptor'])('N', 'O')
+        backbone = namedtuple('backbone_Hbond_atom_name', 
+                              ['donor','acceptor'])('N', 'O')
         is_acceptor = False
         is_donor = False
         H_bond_donor_radius = None
@@ -139,8 +139,9 @@ class HBondParticipant(object):
         H_bond_acceptor_radius = None
         max_num_H_acceptance = None
 
-        for currentDonorGroup in list_of_hbond_donor_groups:
-            if HBondParticipant._am_I_when_given(atom, currentDonorGroup, bb.donor):
+        for currentDonorGroup in hbond_donor_groups:
+            if HBondParticipant._atom_in_group_is_Hbond_participant(
+                    atom, currentDonorGroup, backbone.donor):
                 is_donor = True
                 valence = currentDonorGroup.valence
                 H_bond_donor_radius = currentDonorGroup.H_bond_radius
@@ -148,8 +149,9 @@ class HBondParticipant(object):
                 NN = currentDonorGroup.NN
                 NNN = currentDonorGroup.NNN
 
-        for currentAcceptorGroup in list_of_hbond_acceptor_groups:
-            if HBondParticipant._am_I_when_given(atom, currentAcceptorGroup, bb.acceptor):
+        for currentAcceptorGroup in hbond_acceptor_groups:
+            if HBondParticipant._atom_in_group_is_Hbond_participant(
+                    atom, currentAcceptorGroup, backbone.acceptor):
                 is_acceptor = True
                 valence = currentAcceptorGroup.valence
                 H_bond_acceptor_radius = currentDonorGroup.H_bond_radius
@@ -163,14 +165,14 @@ class HBondParticipant(object):
                     is_donor, H_bond_donor_radius, max_num_H_donations,
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
                     NN, NNN
-                    )
+                )
  
             elif valence == 'sp3':
                 return Sp3HBondParticipant(atom,
                     is_donor, H_bond_donor_radius, max_num_H_donations,
                     is_acceptor, H_bond_acceptor_radius, max_num_H_acceptance,
                     NN, NNN
-                    )
+                )
         else:
             return None
 
@@ -194,13 +196,14 @@ class HBondParticipant(object):
 
 
 class AngleMinimum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
-    def is_if(self, donor=True):
+    def angle_as_donor(self, donor=True):
         return self.as_donor if donor else self.as_acceptor
 
 
 
-class PlaneAngleMaximum(namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
-    def is_if(self, donor=True):
+class PlaneAngleMaximum(
+        namedtuple('AngleMinimum', ['as_donor', 'as_acceptor'])):
+    def angle_as_donor(self, donor=True):
         return self.as_donor if donor else self.as_acceptor
 
 
@@ -212,46 +215,45 @@ class Sp3HBondParticipant(HBondParticipant):
         M = self._atom.coordinates
         P = partner.atom.coordinates
         distance = norm(M - P)
-        if distance < self._H_bond_donor_radius + \
-            partner.H_bond_acceptor_radius:
+        if distance < self._H_bond_donor_radius + partner.H_bond_acceptor_radius:
             return distance
         else:
             return False
 
     @staticmethod        
-    def angle_is(ba, bc):
+    def angle(ba, bc):
         assert isinstance(ba, ndarray)
         assert isinstance(bc, ndarray)
         return rad2deg(arccos(dot(bc, ba) / (norm(bc) * norm(ba))))
 
     def angle_is_ok(self, MtP, MtMM, as_donor=True):
-        angle = self.angle_is(MtP, MtMM)
-        return angle < 180. and angle > self._angle_min.is_if(as_donor)
+        angle = self.angle(MtP, MtMM)
+        return angle < 180. and angle > self._angle_min.angle_as_donor(as_donor)
 
     def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
         return True
 
     @staticmethod
-    def can_I_bond_to_partner(myself, partner, as_donor=True):
+    def can_bond_to_partner(myself, partner, as_donor=True):
         assert isinstance(myself, HBondParticipant)
         assert isinstance(partner, HBondParticipant)        
         M = myself.atom.coordinates
         P = partner.atom.coordinates
         MM = myself.atom.residue.atoms[myself.NN].coordinates
-        MtMM = MM - M
-        MtP = P - M
-        if myself.angle_is_ok(MtP, MtMM, as_donor):
+        MtoMM = MM - M
+        MtoP = P - M
+        if myself.angle_is_ok(MtoP, MtoMM, as_donor):
             MMM = myself.atom.residue.atoms[myself.NNN].coordinates
-            MMtMMM = MMM - MM
-            if myself.planarity_is_ok(MtP, MtMM, MMtMMM, as_donor):
+            MMtoMMM = MMM - MM
+            if myself.planarity_is_ok(MtoP, MtoMM, MMtoMMM, as_donor):
                 return True
 
-    def is_H_bond_mutual(self, partner):
+    def H_bond_is_mutual(self, partner):
         assert isinstance(partner, HBondParticipant)
         distance_or_is_ok = self._distance_is_ok(partner)
         if distance_or_is_ok and \
-            self.can_I_bond_to_partner(self, partner) and \
-            self.can_I_bond_to_partner(partner, self, as_donor=False):
+            self.can_bond_to_partner(self, partner) and \
+            self.can_bond_to_partner(partner, self, as_donor=False):
             partner.append_donor_list(self)
             self.append_acceptor_list(partner)
             return distance_or_is_ok
@@ -273,7 +275,7 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
     _plane_angle_max = PlaneAngleMaximum(60., 90.)
 
     @staticmethod
-    def planarity_is(ba, bc, cd):
+    def planarity(ba, bc, cd):
         assert isinstance(ba, ndarray)
         assert isinstance(bc, ndarray)
         assert isinstance(cd, ndarray)        
@@ -282,13 +284,12 @@ class Sp2HBondParticipant(Sp3HBondParticipant):
         torsion_angle_center = 0 if dot(cd, perndclr_bc_in_plane) > 0. else 180.
         plane_norm_w_partner = cross(-bc, cd)
 
-        return abs(torsion_angle_center - Sp3HBondParticipant.angle_is(
+        return abs(torsion_angle_center - Sp3HBondParticipant.angle(
             my_plane_norm, plane_norm_w_partner))
 
-
     def planarity_is_ok(self, MtP, MtMM, MMtMMM, as_donor=True):
-        plane_angle = self.planarity_is(MMtMMM, -MtMM, MtP)
-        return plane_angle < self._plane_angle_max.is_if(as_donor)
+        plane_angle = self.planarity(MMtMMM, -MtMM, MtP)
+        return plane_angle < self._plane_angle_max.angle_as_donor(as_donor)
 
     valence = property(lambda valence: 'sp2')
 
@@ -344,11 +345,6 @@ class ChainIQ(object):
         assert isinstance(residue, ResidueIQ)
         if residue.uid not in self._residues:
             self._residues[residue.uid] = residue
-        # The following does not work because the first residue is added as 
-        # chain is initialized.
-        #else:
-        #    raise KeyError('%s already exists in list of residues for chain %s' %
-        #        (residue.uid, self._chainID))
 
     atoms = property(lambda self: self._atoms, add_atom)
     residues = property(lambda self: self._residues, add_residue)
@@ -356,5 +352,20 @@ class ChainIQ(object):
 
 
 
-
-
+class ProteinIQ(object):
+    def generate_protein_from_PDB_ATOM_File_Reader(pdb):
+        assert isinstance(pdb, PDBATOMFileReader)
+        donorDict = {}
+        acceptorDict = {}
+        atoms = {}
+        for atom in reader:
+            atoms[atom.serial] = atom
+            if atom.participant:
+                if atom.participant.is_donor:
+                    donorDict[atom.serial] = atom
+                if atom.participant.is_acceptor:
+                    acceptorDict[atom.serial] = atom
+        for donor in donorDict.itervalues():
+            for acceptor in acceptorDict.itervalues():
+                pass
+            pass
